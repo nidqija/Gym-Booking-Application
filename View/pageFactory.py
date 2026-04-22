@@ -13,6 +13,6 @@ class PageType(Enum):
 class PageFactory:
     @staticmethod
     def get_page(page_type: PageType , is_partial : bool = False):
-
+        # if is_partial is true then we return the partial page template path
         prefix = "partials/" if is_partial else ""
         return prefix + page_type.value

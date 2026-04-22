@@ -16,7 +16,9 @@ desktop.ini
 # IDEs
 .vscode/
 .idea/
-
+docker/
+/.dockerignore
 # Environment variables (Safety first!)
 .env
+
 

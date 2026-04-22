@@ -1,6 +1,6 @@
 from enum import Enum
 
-
+# 1. Factory Pattern 
 # this is a simple factory pattern
 # used to get the page template based on the page type
 class PageType(Enum):

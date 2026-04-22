@@ -7,7 +7,9 @@ services:
       - .:/app
     environment:
       - PYTHONUNBUFFERED=1
-      - DYNAMO_ENDPOINT=http://dynamodb-local:8000 
+      - DYNAMODB_URL=http://dynamodb-local:8000 
+      - AWS_ACCESS_KEY_ID=fakeAccessKeyId
+      - AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - dynamodb-local

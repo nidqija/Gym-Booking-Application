@@ -1,19 +1,21 @@
-# Stage 1: Build dependencies
+# Stage 1: Builder
 FROM python:3.13-slim as builder
 WORKDIR /app
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
-# Install to a local path so we can copy it later
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Stage 2: Final Runtime
+# Stage 2: Runtime
 FROM python:3.13-slim
 WORKDIR /app
-# Copy only the installed packages from the builder stage
-COPY --from=builder /root/.local /root/.local
+# Copy the entire virtual environment
+COPY --from=builder /opt/venv /opt/venv
 COPY . .
-ENV PATH=/root/.local/bin:$PATH
+
+# Set the PATH to use the venv's python and libraries
+ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

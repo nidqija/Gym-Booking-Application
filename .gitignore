@@ -1,0 +1,22 @@
+# Virtual Environments
+.venv/
+venv/
+ENV/
+scripts/
+
+# Python Bytecode (the stuff clean.py deletes)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Windows specific
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+
+# Environment variables (Safety first!)
+.env
+

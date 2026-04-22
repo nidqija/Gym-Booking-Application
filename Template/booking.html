@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titan Gym | Claim Your Session</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        :root {
+            --onyx: #1A1A1A;
+            --lime: #CCFF00;
+            --concrete: #2D2D2D;
+            --steel: #404040;
+        }
+
+        body {
+            background-color: var(--onyx);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h5, .nav-link, .navbar-brand {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: rgba(26, 26, 26, 0.95);
+            border-bottom: 2px solid var(--lime);
+        }
+
+        /* Industrial Header */
+        .page-header {
+            padding: 60px 0;
+            background: linear-gradient(45deg, #111, var(--onyx));
+            border-bottom: 1px solid var(--steel);
+        }
+
+        .divider {
+            height: 8px;
+            background: var(--lime);
+            width: 80px;
+            margin-bottom: 15px;
+        }
+
+        /* Brutalist Date Picker - Titan Edition */
+        .date-picker-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding: 1rem 0;
+            scrollbar-width: none; 
+        }
+        .date-picker-container::-webkit-scrollbar { display: none; }
+
+        .date-card {
+            min-width: 100px;
+            background: var(--concrete);
+            border: 2px solid var(--steel);
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .date-card.active {
+            background: var(--lime);
+            color: black;
+            border-color: var(--lime);
+            transform: translateY(-5px);
+            box-shadow: 0px 10px 20px rgba(204, 255, 0, 0.2);
+        }
+
+        .date-card .day { font-size: 0.8rem; font-weight: 700; display: block; }
+        .date-card .num { font-size: 1.8rem; font-weight: 800; }
+
+        /* Time Slot Cards */
+        .time-card {
+            background-color: var(--concrete);
+            border: none;
+            border-left: 6px solid var(--lime);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .time-card:hover {
+            background-color: var(--steel);
+            transform: scale(1.01);
+        }
+
+        .time-info h3 { color: var(--lime); margin: 0; font-size: 1.6rem; }
+        .time-info .time-range { 
+            font-weight: 700; 
+            font-size: 0.9rem; 
+            color: #bbb;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Titan Button */
+        .btn-titan {
+            background-color: var(--lime);
+            color: black;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 800;
+            border-radius: 0px;
+            border: none;
+            padding: 12px 30px;
+            text-transform: uppercase;
+        }
+
+        .btn-titan:hover {
+            background-color: #b3df00;
+            color: black;
+        }
+
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline-block; }
+    </style>
+</head>
+<body>
+
+
+    {% include 'component/navbar.html' %}
+
+    <header class="page-header">
+        <div class="container">
+            <div class="divider"></div>
+            <h1 class="display-4 fw-bold">CLAIM YOUR SESSION</h1>
+            <p class="text-secondary text-uppercase fw-bold">Select a date to view high-intensity slots</p>
+        </div>
+    </header>
+
+    <main class="container py-5">
+        <section class="mb-5">
+            <h5 class="text-secondary mb-3"><i class="bi bi-calendar3 me-2"></i> 1. SELECT DATE</h5>
+            <div class="date-picker-container">
+                <div class="date-card active" hx-get="/slots/apr-23" hx-target="#slot-container">
+                    <span class="day">THU</span>
+                    <span class="num">23</span>
+                </div>
+                <div class="date-card" hx-get="/slots/apr-24" hx-target="#slot-container">
+                    <span class="day">FRI</span>
+                    <span class="num">24</span>
+                </div>
+                <div class="date-card" hx-get="/slots/apr-25" hx-target="#slot-container">
+                    <span class="day">SAT</span>
+                    <span class="num">25</span>
+                </div>
+                <div class="date-card" hx-get="/slots/apr-26" hx-target="#slot-container">
+                    <span class="day">SUN</span>
+                    <span class="num">26</span>
+                </div>
+                <div class="date-card" hx-get="/slots/apr-27" hx-target="#slot-container">
+                    <span class="day">MON</span>
+                    <span class="num">27</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="slot-container">
+            <h5 class="text-secondary mb-4"><i class="bi bi-lightning-charge me-2"></i> 2. CHOOSE DISCIPLINE</h5>
+            
+            <div class="time-card shadow-sm">
+                <div class="time-info">
+                    <span class="time-range">08:00 AM - 09:30 AM</span>
+                    <h3>Morning Strength</h3>
+                </div>
+                <button class="btn btn-titan" 
+                        hx-post="/bookings/reserve" 
+                        hx-vals='{"slot_id": "str_01"}'
+                        hx-swap="outerHTML">
+                    Reserve Slot
+                    <span class="spinner-border spinner-border-sm htmx-indicator"></span>
+                </button>
+            </div>
+
+            <div class="time-card shadow-sm">
+                <div class="time-info">
+                    <span class="time-range">11:00 AM - 12:30 PM</span>
+                    <h3>Tactical Cardio</h3>
+                </div>
+                <button class="btn btn-titan" 
+                        hx-post="/bookings/reserve" 
+                        hx-vals='{"slot_id": "cardio_01"}'
+                        hx-swap="outerHTML">
+                    Reserve Slot
+                    <span class="spinner-border spinner-border-sm htmx-indicator"></span>
+                </button>
+            </div>
+
+            <div class="time-card shadow-sm">
+                <div class="time-info">
+                    <span class="time-range">05:30 PM - 07:00 PM</span>
+                    <h3>Powerlifting Lab</h3>
+                </div>
+                <button class="btn btn-titan" 
+                        hx-post="/bookings/reserve" 
+                        hx-vals='{"slot_id": "power_01"}'
+                        hx-swap="outerHTML">
+                    Reserve Slot
+                    <span class="spinner-border spinner-border-sm htmx-indicator"></span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4 text-center border-top border-secondary mt-5">
+        <p class="small text-secondary fw-bold text-uppercase">&copy; 2026 CYBER FITNESS | DISCIPLINE OVER MOTIVATION.</p>
+    </footer>
+
+    <script>
+        // Simple JS to handle date card active state visually
+        document.querySelectorAll('.date-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelector('.date-card.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

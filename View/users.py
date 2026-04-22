@@ -1,4 +1,4 @@
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -12,7 +12,28 @@ templates = Jinja2Templates(directory="Template")
 # home page 
 @router.get("/", response_class=HTMLResponse)
 async def render_home(request: Request):
+
+    if request.headers.get("hx-request") == "true":
+        return Response(headers={"HX-Redirect": "/"})
+    
     template_name = PageFactory.get_page(PageType.HOME)
     return templates.TemplateResponse(name=template_name, request=request )
 
 
+@router.get("/about", response_class=HTMLResponse)
+async def render_about(request: Request):
+    template_name = PageFactory.get_page(PageType.ABOUT)
+    return templates.TemplateResponse(name=template_name, request=request)
+
+
+
+@router.get("/schedule" , response_class=HTMLResponse)
+async def render_schedule(request: Request):
+
+    # if this is an htmx request , return a partial response with the schedule page template
+    if request.headers.get("hx-request") == "true":
+        return Response(headers={"HX-Redirect": "/schedule"})
+    
+
+    template_name = PageFactory.get_page(PageType.SCHEDULE)
+    return templates.TemplateResponse(name=template_name, request=request)   

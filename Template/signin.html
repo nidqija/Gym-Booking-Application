@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Titan Gym</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        :root {
+            --onyx: #1A1A1A;
+            --lime: #CCFF00;
+            --concrete: #2D2D2D;
+            --dark-gray: #121212;
+            --steel: #444444; /* Added missing variable */
+        }
+
+        body {
+            background-color: var(--onyx);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column; /* Allows navbar at top and content centered */
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background-color: rgba(26, 26, 26, 0.95) !important;
+            border-bottom: 2px solid var(--lime);
+            width: 100%;
+            z-index: 1050; /* Ensure it stays on top */
+        }
+
+        .nav-link {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            color: white !important;
+        }
+
+        /* Industrial Background Texture */
+        .bg-industrial {
+            background: linear-gradient(135deg, #1a1a1a 25%, #222 25%, #222 50%, #1a1a1a 50%, #1a1a1a 75%, #222 75%, #222 100%);
+            background-size: 40px 40px;
+            opacity: 0.05;
+            position: fixed; /* Changed to fixed so it covers the whole viewport */
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+
+        /* Main Wrapper to center the card */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background-color: var(--concrete);
+            border-left: 5px solid var(--lime);
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            color: var(--lime);
+            letter-spacing: 2px;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: #bbb;
+        }
+
+        .form-control {
+            background-color: var(--dark-gray);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 0;
+            padding: 12px;
+        }
+
+        .form-control:focus {
+            background-color: var(--dark-gray);
+            border-color: var(--lime);
+            color: white;
+            box-shadow: none;
+        }
+
+        .btn-lime {
+            background-color: var(--lime);
+            color: black;
+            font-weight: 800;
+            border-radius: 2px;
+            border: none;
+            text-transform: uppercase;
+            padding: 14px;
+            font-family: 'Oswald', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-lime:hover {
+            background-color: #b3df00;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer a {
+            color: var(--lime);
+            text-decoration: none;
+        }
+
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-industrial"></div>
+
+    {% include 'component/navbar.html' %}
+
+    <div class="main-wrapper">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="bi bi-lightning-charge-fill fs-1" style="color: var(--lime);"></i>
+                <h2>Member Sign In</h2>
+            </div>
+
+            <form hx-post="/auth/login" hx-target="#login-message" hx-indicator="#loader">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="titans@gym.com" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-lime w-100 mb-3">
+                    <span id="btn-text">Enter the Arena</span>
+                    <span id="loader" class="spinner-border spinner-border-sm htmx-indicator ms-2" role="status"></span>
+                </button>
+
+                <div id="login-message" class="text-center"></div>
+            </form>
+
+            <div class="auth-footer text-center mt-4">
+                <p class="text-secondary mb-1">New to Titan Gym? <a href="/signup">Join the ranks</a></p>
+                <p><a href="/forgot" class="text-muted small">Forgot Password?</a></p>
+                <p><a href="/sign-up" class="text-muted small">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

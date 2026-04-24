@@ -5,22 +5,57 @@ from abc import ABC, abstractmethod
 # this is a factory pattern implementation for creating different types of dashboard pages.
 # it uses an abstract class and have multiple classes
 # 
-class DashboardPage(ABC):
+class PageType(Enum):
+    HOME = "home.html"
+    BOOKING = "booking.html"
+    SIGN_IN = "signin.html"
+    SIGN_UP = "signup.html"
+
+
+class PageFactory(ABC):
     @abstractmethod
-    def get_template_path(self , is_partial : bool = False) -> str:
+    def get_name(self) -> str:
         pass
 
 
-
-class HomePage(DashboardPage):
-    def get_template_path(self , is_partial : bool = False) -> str:
+    def get_template_path(self , is_partial: bool = False) -> str:
         prefix = "partials/" if is_partial else ""
-        return f"{prefix}home.html"
+        return f"{prefix}{self.get_name().value}"
     
 
-class SchedulePage(DashboardPage):
-    def get_template_path(self , is_partial : bool = False) -> str:
-        prefix = "partials/" if is_partial else ""
-        return f"{prefix}schedule.html"
+class HomePage(PageFactory):
+    def get_name(self) -> str:
+        return PageType.HOME
+    
 
+class SchedulePage(PageFactory):
+    def get_name(self) -> str:
+        return PageType.BOOKING
+    
+    
+class SignInPage(PageFactory):
+    def get_name(self) -> str:
+        return PageType.SIGN_IN
+    
 
+class SignUpPage(PageFactory):
+    def get_name(self) -> str:
+        return PageType.SIGN_UP
+
+    
+
+class PageFactory:
+    _pages = {
+        PageType.HOME: HomePage,
+        PageType.BOOKING: SchedulePage,
+        PageType.SIGN_IN: SignInPage ,
+        PageType.SIGN_UP: SignUpPage
+    }
+
+    @staticmethod
+    def create_page(page_type: PageType) -> PageFactory:
+        page_class = PageFactory._pages.get(page_type)
+        if page_class is None:
+            raise ValueError(f"Unknown page type: {page_type}")
+        return page_class()
+        

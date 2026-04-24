@@ -1,18 +1,26 @@
 from enum import Enum
+from abc import ABC, abstractmethod
 
-# 1. Factory Pattern 
-# this is a simple factory pattern
-# used to get the page template based on the page type
-class PageType(Enum):
-    HOME = "home.html"
-    SCHEDULE = "booking.html"
+# 1. Factory Pattern
+# this is a factory pattern implementation for creating different types of dashboard pages.
+# it uses an abstract class and have multiple classes
+# 
+class DashboardPage(ABC):
+    @abstractmethod
+    def get_template_path(self , is_partial : bool = False) -> str:
+        pass
 
 
-# this factory class is used 
-# to get the page template based on the page type defined in the PageType enum
-class PageFactory:
-    @staticmethod
-    def get_page(page_type: PageType , is_partial : bool = False):
-        # if is_partial is true then we return the partial page template path
+
+class HomePage(DashboardPage):
+    def get_template_path(self , is_partial : bool = False) -> str:
         prefix = "partials/" if is_partial else ""
-        return prefix + page_type.value
+        return f"{prefix}home.html"
+    
+
+class SchedulePage(DashboardPage):
+    def get_template_path(self , is_partial : bool = False) -> str:
+        prefix = "partials/" if is_partial else ""
+        return f"{prefix}schedule.html"
+
+

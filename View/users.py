@@ -2,7 +2,7 @@ from fastapi import APIRouter, FastAPI, Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from View.pageFactory import PageFactory, PageType
+from View.pageFactory import DashboardPage, HomePage, SchedulePage
 
 # user interface router
 # use this router to render the home page and other pages
@@ -12,18 +12,13 @@ templates = Jinja2Templates(directory="Template")
 # home page 
 @router.get("/", response_class=HTMLResponse)
 async def render_home(request: Request):  
-    template_name = PageFactory.get_page(PageType.HOME)
-    return templates.TemplateResponse(name=template_name, request=request )
+    page_factory = HomePage()
+    template_path = page_factory.get_template_path()
+    return templates.TemplateResponse(name=template_path, context={"request": request} , request=request)
 
 
-@router.get("/about", response_class=HTMLResponse)
-async def render_about(request: Request):
-    template_name = PageFactory.get_page(PageType.ABOUT)
-    return templates.TemplateResponse(name=template_name, request=request)
-
-
-@router.get("/schedule" , response_class=HTMLResponse)
-async def render_schedule(request: Request):
-    template_name = PageFactory.get_page(PageType.SCHEDULE)
-    return templates.TemplateResponse(name=template_name, request=request)   
-
+@router.get("/schedule", response_class=HTMLResponse)
+async def render_schedule(request: Request):  
+    page_factory = SchedulePage()
+    template_path = page_factory.get_template_path()
+    return templates.TemplateResponse(name=template_path, context={"request": request} , request=request)

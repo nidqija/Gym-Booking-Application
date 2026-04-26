@@ -9,18 +9,15 @@ DYNAMODB_URL = os.getenv("DYNAMODB_URL", "http://localhost:8000")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "fakeAccessKeyId")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "fakeSecretAccessKey")
 
-# 2. Registry Pattern for Database Management
-# used to manage the database connection and table definitions in a centralized way
-# avoid scattering database connection logic and table definitions across the codebase
-# improve maintainability and scalability by having a single place to manage database interactions
-# in a way , it is like a singleton pattern but with more flexibility and separation of concerns
 
 class DatabaseRegistryManager:
+    # this class will manage the database connection and provide methods to create tables and get table references
     def __init__(self , db_resource):
-        self.db_resource = db_resource
+        self.db_resource = db_resource # resource object for dynamodb connection
+        self._tables = {} # empty dictionary to store table references for caching purposes
 
 
-    # this method will be used to test connection to the database and return the resource object
+    @staticmethod # static method to create a database resource connection to dynamodb using boto3 library
     def get_db_resource():
       return boto3.resource(
          "dynamodb",
@@ -91,6 +88,29 @@ class DatabaseRegistryManager:
            else:
                 print(f"Table {table_name} already up to date. Skipping creation.")
 
+
+    def table(self, table_name):
+        # this method will be used to get a reference to a table in the database
+        if table_name not in self._tables:
+            self._tables[table_name] = self.db_resource.Table(table_name)
+        return self._tables[table_name]
+    
+# create a db resource connection and init the database registry manager
+# then call the migrate method to create tables if they do not exist
+resource = DatabaseRegistryManager.get_db_resource()
+
+# initalize the database registry manager with the resource connection
+db = DatabaseRegistryManager(resource)
+
+# call the migrate method to migrate the database and create tables if they do not exist
+db.migrate()
+
+
+
+#benefits of this approach:
+#1. we can easily manage the database connection and table references in a single class
+#2. we can easily add new tables by simply adding new definitions to the get_definitions method
+#3. we can easily migrate the database by calling the migrate method 
 
 
 

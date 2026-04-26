@@ -1,6 +1,7 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 from Model.database_service import db
+from Model.users import User
 
 
 
@@ -34,13 +35,19 @@ class SignInAction(AuthAction):
 class SignUpAction(AuthAction):
   async def execute(self, data: dict):
         # add user to the database using the provided data
-        return db.table("Users").put_item(
-            Item={
-                "user_id": data.get("email"),
-                "full_name": data.get("fullname"),
-                "password": data.get("password")
-            }
-        )
+        try:
+            new_user = User(
+                email=data.get("email"),
+                full_name=data.get("fullname"),
+                password=data.get("password")
+            )
+
+            result =new_user.save()
+            return result
+        except Exception as e:
+            print(f"DEBUG SIGNUP ERROR: {e}") # This will show in your terminal
+            return {"error": str(e)}
+            
     
 
 # Concrete Factory 

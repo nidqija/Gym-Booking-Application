@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from View.pageFactory import  PageType,  PageFactory 
 from View.authFactory import AuthFactory
 from Model.database_service import db
-
+from fastapi.responses import RedirectResponse
 
 
 # user interface router
@@ -71,10 +71,13 @@ async def render_auth_page(request: Request , mode: str):
         if mode == "signin":
             # if signin successed
             # return a success message to the user
-            if result.get('status') == 200:
-                return "<div>Sign in successful!</div>"
+            if  "Sign in successful" in result:
+                response = Response(status_code=204) # 204 = No Content (very fast)
+                response.headers["HX-Redirect"] = "/" 
+                return response
+                
             else:
-                return "<div>Sign in failed. Please try again.</div>"
+                return "<div>Sign in failed. Invalid email or password.</div>"
 
         print(result)
 
@@ -82,7 +85,7 @@ async def render_auth_page(request: Request , mode: str):
         # if mode is not recognized
         # print the error and return an error page
         print(f"Error: {e}")
-        return templates.TemplateResponse(name="error.html", context={"request": request, "message": str(e)} , request=request)
+        return "<div>Invalid authentication mode. Please try again.</div>"
 
 
 

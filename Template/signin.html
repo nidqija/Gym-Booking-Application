@@ -144,7 +144,7 @@
                 <h2>Member Sign In</h2>
             </div>
 
-            <form hx-post="/auth/login" hx-target="#login-message" hx-indicator="#loader">
+            <form hx-post="/auth/signin" hx-target="#login-message" hx-indicator="#loader" method="POST">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email Address</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="titans@gym.com" required>

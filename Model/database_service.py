@@ -70,6 +70,21 @@ class DatabaseRegistryManager:
                     "ReadCapacityUnits": 5,
                     "WriteCapacityUnits": 5
                 },
+          } ,
+          {
+              "TableName" : "Sessions",
+                "KeySchema": [
+                        {"AttributeName": "session_id", "KeyType": "HASH"}
+                    ],
+    
+                    "AttributeDefinitions": [
+                        {"AttributeName": "session_id", "AttributeType": "S"}
+                    ],
+    
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 5,
+                        "WriteCapacityUnits": 5
+                    },
           }
        ]
     

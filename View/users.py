@@ -10,7 +10,9 @@ from Model.database_service import db
 from fastapi.responses import RedirectResponse
 from fastapi import Cookie
 from typing import Optional
-from View.dependency import get_current_user
+from Service.dependency import get_current_user
+from Model.sessions import Session
+from Service.home_service import HomeService
 
 
 # user interface router
@@ -22,13 +24,10 @@ templates = Jinja2Templates(directory="Template")
 # home page 
 @router.get("/", response_class=HTMLResponse)
 async def render_home(request: Request, current_user= Depends(get_current_user)):
-    
-    display_name = current_user.full_name if current_user else "Guest"
-    print(f"DEBUG: Current user is {display_name} ({current_user.email if current_user else 'No email'})")
-
+    view_data = HomeService.get_home_data(current_user)  
     page_factory = PageFactory.create_page(PageType.HOME)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request, "user": display_name} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, **view_data }, request=request)
 
 
 @router.get("/schedule", response_class=HTMLResponse)

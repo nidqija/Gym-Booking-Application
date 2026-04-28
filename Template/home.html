@@ -140,60 +140,33 @@
     </section>
 
     <main id="schedule" class="container py-5">
-        {% if user and user != 'Guest' %}
-        <h2 class="text-center mb-3 display-6">Welcome Back, {{ user }}!</h2>
+        {% if display_name %}
+        <h2 class="text-center mb-3 display-6">Welcome Back, {{ display_name }}!</h2>
         <p class="text-center mb-5">Let's get back to your workout sessions!</p>
         {% else %}
         <h2 class="text-center mb-5 display-4">Available Slots</h2>
         {% endif %}
         <div class="row g-4">
+            {% for session in all_sessions %}
             <div class="col-md-4">
                 <div class="card slot-card h-100 p-4">
-                    <h3 class="h4 text-white">Morning Session</h3>
-                    <p class="text-secondary">10:00 AM - 12:00 PM</p>
+                    <h3 class="h4 text-white">{{ session.available_sessions }} Session</h3>
+                    <p class="text-secondary">{{ session.start_time }} - {{ session.end_time }}</p>
                     <div class="mt-auto">
                         <button class="btn btn-lime w-100" 
                                 hx-post="/bookings/reserve" 
-                                hx-vals='{"slot_id": "morn_pow"}'
+                                hx-vals='{"slot_id": "{{ session.id }}"}'
                                 hx-swap="outerHTML">
                             Book Now
                             <span class="spinner-border spinner-border-sm htmx-indicator" role="status"></span>
                         </button>
                     </div>
                 </div>
+                
             </div>
+            {% endfor %}
 
-            <div class="col-md-4">
-                <div class="card slot-card h-100 p-4">
-                    <h3 class="h4 text-white">Afternoon Session</h3>
-                    <p class="text-secondary">12:00 PM - 7:00 PM</p>
-                    <div class="mt-auto">
-                        <button class="btn btn-lime w-100" 
-                                hx-post="/bookings/reserve" 
-                                hx-vals='{"slot_id": "hiit_01"}'
-                                hx-swap="outerHTML">
-                            Book Now
-                            <span class="spinner-border spinner-border-sm htmx-indicator" role="status"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card slot-card h-100 p-4">
-                    <h3 class="h4 text-white">Evening Session</h3>
-                    <p class="text-secondary">07:00 PM - 11:00 PM</p>
-                    <div class="mt-auto">
-                        <button class="btn btn-lime w-100" 
-                                hx-post="/bookings/reserve" 
-                                hx-vals='{"slot_id": "eve_shred"}'
-                                hx-swap="outerHTML">
-                            Book Now
-                            <span class="spinner-border spinner-border-sm htmx-indicator" role="status"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </main>
 

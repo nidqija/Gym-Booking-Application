@@ -52,36 +52,43 @@
             margin-bottom: 15px;
         }
 
-        /* Brutalist Date Picker - Titan Edition */
-        .date-picker-container {
-            display: flex;
-            overflow-x: auto;
-            gap: 1rem;
-            padding: 1rem 0;
-            scrollbar-width: none; 
+        /* Titan Dropdown Styling */
+        .dropdown-container {
+            max-width: 400px;
+            position: relative;
         }
-        .date-picker-container::-webkit-scrollbar { display: none; }
 
-        .date-card {
-            min-width: 100px;
-            background: var(--concrete);
+        .titan-select {
+            background-color: var(--concrete);
+            color: white;
             border: 2px solid var(--steel);
-            padding: 1.5rem 1rem;
-            text-align: center;
+            border-radius: 0;
+            padding: 1.2rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            appearance: none;
+            width: 100%;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .date-card.active {
-            background: var(--lime);
-            color: black;
+        .titan-select:focus {
+            outline: none;
             border-color: var(--lime);
-            transform: translateY(-5px);
-            box-shadow: 0px 10px 20px rgba(204, 255, 0, 0.2);
+            box-shadow: 0px 0px 15px rgba(204, 255, 0, 0.1);
         }
 
-        .date-card .day { font-size: 0.8rem; font-weight: 700; display: block; }
-        .date-card .num { font-size: 1.8rem; font-weight: 800; }
+        .dropdown-container::after {
+            content: '\F229'; /* Bootstrap bi-chevron-down */
+            font-family: "bootstrap-icons";
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--lime);
+            pointer-events: none;
+        }
 
         /* Time Slot Cards */
         .time-card {
@@ -133,7 +140,6 @@
 </head>
 <body>
 
-
     {% include 'component/navbar.html' %}
 
     <header class="page-header">
@@ -147,27 +153,20 @@
     <main class="container py-5">
         <section class="mb-5">
             <h5 class="text-secondary mb-3"><i class="bi bi-calendar3 me-2"></i> 1. SELECT DATE</h5>
-            <div class="date-picker-container">
-                <div class="date-card active" hx-get="/slots/apr-23" hx-target="#slot-container">
-                    <span class="day">THU</span>
-                    <span class="num">23</span>
-                </div>
-                <div class="date-card" hx-get="/slots/apr-24" hx-target="#slot-container">
-                    <span class="day">FRI</span>
-                    <span class="num">24</span>
-                </div>
-                <div class="date-card" hx-get="/slots/apr-25" hx-target="#slot-container">
-                    <span class="day">SAT</span>
-                    <span class="num">25</span>
-                </div>
-                <div class="date-card" hx-get="/slots/apr-26" hx-target="#slot-container">
-                    <span class="day">SUN</span>
-                    <span class="num">26</span>
-                </div>
-                <div class="date-card" hx-get="/slots/apr-27" hx-target="#slot-container">
-                    <span class="day">MON</span>
-                    <span class="num">27</span>
-                </div>
+            
+            <div class="dropdown-container">
+                <select class="titan-select" 
+                        name="date" 
+                        hx-get="/slots/" 
+                        hx-target="#slot-container"
+                        hx-trigger="change"
+                        onchange="this.setAttribute('hx-get', '/slots/' + this.value); htmx.process(this);">
+                    <option value="apr-23" selected>Thursday, April 23</option>
+                    <option value="apr-24">Friday, April 24</option>
+                    <option value="apr-25">Saturday, April 25</option>
+                    <option value="apr-26">Sunday, April 26</option>
+                    <option value="apr-27">Monday, April 27</option>
+                </select>
             </div>
         </section>
 
@@ -222,14 +221,5 @@
         <p class="small text-secondary fw-bold text-uppercase">&copy; 2026 CYBER FITNESS | DISCIPLINE OVER MOTIVATION.</p>
     </footer>
 
-    <script>
-        // Simple JS to handle date card active state visually
-        document.querySelectorAll('.date-card').forEach(card => {
-            card.addEventListener('click', function() {
-                document.querySelector('.date-card.active').classList.remove('active');
-                this.classList.add('active');
-            });
-        });
-    </script>
 </body>
 </html>

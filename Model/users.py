@@ -30,6 +30,9 @@ class User(BaseModel):
                 full_name=item["full_name"],
                 password=item["password"]
             )
+        
+        
+
         return None
     
     def getUserInfo(self):

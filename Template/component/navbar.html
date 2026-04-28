@@ -13,7 +13,14 @@
                     <li class="nav-item"><a class="nav-link px-3" href="/" >Home</a></li>
                     <li class="nav-item"><a class="nav-link px-3" href="/schedule" >Schedule</a></li>
                     <li class="nav-item"><a class="nav-link px-3" href="/trainers" >Trainers</a></li>
+
+                    {% if user_authenticated %}
+                    <li class="nav-item"><a class="nav-link px-3" href="/profile" >Profile</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="/logout" >Logout</a></li>
+                    {% else %}
                     <li class="nav-item"><a class="nav-link px-3" href="/sign-in" >Sign In</a></li>
+                    <li class="nav-item"><a class="nav-link px-3" href="/sign-up" >Sign Up</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

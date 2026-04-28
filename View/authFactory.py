@@ -21,12 +21,18 @@ class AuthAction(ABC):
 # Product 1 : Sign In Action
 class SignInAction(AuthAction):
     async def execute(self, data: dict):
-        # check user credentials and return a response
-        response = db.table("Users").get_item(
-            Key={
-                "user_id": data.get("email")
-            }
-        )
+        # authenticate the user using the provided data
+
+        try :
+            user = User.get(email=data.get("email"))
+            if user and user.password == data.get("password"):
+                response = {"message": "Sign in successful"}
+            else:
+                response = {"message": "Invalid email or password"}
+
+        except Exception as e:
+            print(f"DEBUG SIGNIN ERROR: {e}") 
+            response = {"error": str(e)}
         
         return f"Logging in user with email: {data.get('email')}, response: {response}"
     

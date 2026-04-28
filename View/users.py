@@ -1,4 +1,6 @@
-from fastapi import APIRouter, FastAPI, Request , Response
+from typing import Optional
+
+from fastapi import APIRouter, Depends, FastAPI, Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +8,9 @@ from View.pageFactory import  PageType,  PageFactory
 from View.authFactory import AuthFactory
 from Model.database_service import db
 from fastapi.responses import RedirectResponse
+from fastapi import Cookie
+from typing import Optional
+from View.dependency import get_current_user
 
 
 # user interface router
@@ -13,33 +18,38 @@ from fastapi.responses import RedirectResponse
 router = APIRouter(tags=["User Interface"])
 templates = Jinja2Templates(directory="Template")
 
+
 # home page 
 @router.get("/", response_class=HTMLResponse)
-async def render_home(request: Request):  
+async def render_home(request: Request, current_user= Depends(get_current_user)):
+    
+    display_name = current_user.full_name if current_user else "Guest"
+    print(f"DEBUG: Current user is {display_name} ({current_user.email if current_user else 'No email'})")
+
     page_factory = PageFactory.create_page(PageType.HOME)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": display_name} , request=request)
 
 
 @router.get("/schedule", response_class=HTMLResponse)
-async def render_schedule(request: Request):  
+async def render_schedule(request: Request, current_user = Depends(get_current_user)):  
     page_factory = PageFactory.create_page(PageType.BOOKING)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
 
 
 @router.get("/sign-in", response_class=HTMLResponse)
-async def render_sign_in(request: Request):  
+async def render_sign_in(request: Request, current_user = Depends(get_current_user)):  
     page_factory = PageFactory.create_page(PageType.SIGN_IN)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
 
 
 @router.get("/sign-up", response_class=HTMLResponse)
-async def render_sign_up(request: Request):  
+async def render_sign_up(request: Request, current_user = Depends(get_current_user)):  
     page_factory = PageFactory.create_page(PageType.SIGN_UP)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
 
 
 
@@ -73,7 +83,9 @@ async def render_auth_page(request: Request , mode: str):
             # return a success message to the user
             if  "Sign in successful" in result:
                 response = Response(status_code=204) # 204 = No Content (very fast)
+                response.set_cookie(key="user_email", value=data.get("email"), httponly=True) # set a cookie to keep the user logged in
                 response.headers["HX-Redirect"] = "/" 
+                print("Cookie set for user:", data.get("email")) 
                 return response
                 
             else:

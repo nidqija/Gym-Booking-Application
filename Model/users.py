@@ -31,5 +31,18 @@ class User(BaseModel):
                 password=item["password"]
             )
         return None
+    
+    def getUserInfo(self):
+        # this method is for getting user information
+        # it retrieves the user data from the database based on the email and returns it as a dictionary
+        response = db.table("Users").get_item(Key={"user_id": self.email})
+        item = response.get("Item")
+        if item:
+            return {
+                "email": item["user_id"],
+                "full_name": item["full_name"],
+                "password": item["password"]
+            }
+        return None
        
     

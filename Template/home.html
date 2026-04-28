@@ -140,8 +140,8 @@
     </section>
 
     <main id="schedule" class="container py-5">
-        {% if user %}
-        <h2 class="text-center mb-3 display-6">Welcome Back, {{ user.split('@')[0].capitalize() }}!</h2>
+        {% if user and user != 'Guest' %}
+        <h2 class="text-center mb-3 display-6">Welcome Back, {{ user }}!</h2>
         <p class="text-center mb-5">Let's get back to your workout sessions!</p>
         {% else %}
         <h2 class="text-center mb-5 display-4">Available Slots</h2>

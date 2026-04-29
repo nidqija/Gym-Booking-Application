@@ -159,6 +159,7 @@
                         name="date" 
                         hx-get="/slots/" 
                         hx-target="#slot-container"
+                        name="date"
                         hx-trigger="change"
                         onchange="this.setAttribute('hx-get', '/slots/' + this.value); htmx.process(this);">
                     {% for day in upcoming %}
@@ -176,12 +177,15 @@
             <div class="time-card shadow-sm">
                 <div class="time-info">
                     <span class="time-range">{{ session.start_time }} - {{ session.end_time }}</span>
-                    <h3>{{ session.available_sessions }} Session</h3>
+                    <h3 name="session_id">{{ session.available_sessions }} Session</h3>
                 </div>
                 <button class="btn btn-titan" 
-                        hx-post="/bookings/reserve" 
+                        hx-post="/reserveslot/{{ session.session_id }}" 
                         hx-vals='{"slot_id": "{{ session.session_id }}"}'
-                        hx-swap="outerHTML">
+                        hx-include="[name='date']"
+                        hx-swap="outerHTML"
+                        >
+                        
                     Reserve Slot
                     <span class="spinner-border spinner-border-sm htmx-indicator"></span>
                 </button>

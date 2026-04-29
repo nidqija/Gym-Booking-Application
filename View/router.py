@@ -3,17 +3,19 @@ from fastapi import APIRouter, Depends, FastAPI, Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from View.pageFactory import  PageType,  PageFactory 
-from View.authFactory import AuthFactory
+from Patterns.Factory.pageFactory import  PageType,  PageFactory 
+from Patterns.Factory.authFactory import AuthFactory
 from Model.database_service import db
 from fastapi.responses import RedirectResponse
 from fastapi import Cookie
 from typing import Optional
-from Service.user_service import get_current_user
+from Patterns.Service.user_service import get_current_user
 from Model.sessions import Session
-from Service.home_service import HomeService
-from Service.gym_dates_service import GymDatesService
+from Patterns.Service.home_service import HomeService
+from Patterns.Service.gym_dates_service import GymDatesService
+from Patterns.Command.booking_command import CreateBookingCommand
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 
 # user interface router
@@ -73,7 +75,26 @@ async def render_sign_up(request: Request, current_user = Depends(get_current_us
 
 @router.post("/reserveslot/{session_id}" , response_class=HTMLResponse)
 async def reserve_slot(request: Request, session_id: str, current_user = Depends(get_current_user)):  
-    pass
+    
+    if not current_user:
+        return "<div>Please sign in to reserve a slot.</div>"
+    
+    form_data = await request.form()
+    booking_date = form_data.get("date")
+
+    command = CreateBookingCommand(
+        booking_id=str(uuid4()),  # Generate a unique booking ID
+        user_id=current_user.email,  # Get the user ID from the current user
+        session_id=session_id,  # Get the session ID from the path parameter
+        date=booking_date  # Get the booking date from the form data
+    )
+
+    result = await command.execute()  # Execute the command to create the booking
+
+    if result.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        return "<div>Slot reserved successfully!</div>"
+    else:
+        return "<div>Failed to reserve slot. Please try again.</div>"
 
 
 

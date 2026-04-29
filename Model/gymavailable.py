@@ -17,8 +17,11 @@ class GymAvailable(BaseModel):
             response = db.table("GymAvailability").get_item(
                 Key={"gym_available_id": "MAIN_SCHEDULE"}
             )
+            # get the item from the response and print it for debugging
             item = response.get("Item")
             print(f"Simple fetch response: {response}")
+
+            # return the item as instance if exists , else return None
             return cls(**item) if item else None
         except Exception as e:
             print(f"Simple fetch failed: {e}")

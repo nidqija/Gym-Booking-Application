@@ -19,28 +19,8 @@ class Booking(BaseModel):
         return db.table("Bookings").put_item(Item=booking_data)
     
 
-    def book_slot(self):
-        # this method is for booking a slot for a user
-        # it saves the booking data to the database and updates the available sessions in the Sessions table
-        booking_response = self.save()
+    
 
-        # update the available sessions in the Sessions table
-        session_response = db.table("Sessions").get_item(Key={"session_id": self.session_id})
-        session_item = session_response.get("Item")
-        if session_item:
-            available_sessions = int(session_item["available_sessions"])
-            if available_sessions > 0:
-                available_sessions -= 1
-                db.table("Sessions").update_item(
-                    Key={"session_id": self.session_id},
-                    UpdateExpression="SET available_sessions = :val",
-                    ExpressionAttributeValues={":val": str(available_sessions)}
-                )
-                return booking_response
-            else:
-                return {"error": "No available sessions"}
-        else:
-            return {"error": "Session not found"}
 
 
 

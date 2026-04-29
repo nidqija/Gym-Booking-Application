@@ -100,6 +100,35 @@ class DatabaseRegistryManager:
                         "ReadCapacityUnits": 4,
                         "WriteCapacityUnits": 4
                     },
+          },
+          {
+              # this is how to make a table with a global secondary index (GSI) 
+              # to allow querying by user_id in the Bookings table
+              "TableName" : "Bookings",
+                "KeySchema": [
+                        {"AttributeName": "booking_id", "KeyType": "HASH"} ,
+                        
+                    ],
+    
+                    "AttributeDefinitions": [
+                        {"AttributeName": "booking_id", "AttributeType": "S"},
+                        # add user id attribute for global secondary index 
+                        {"AttributeName": "user_id", "AttributeType": "S"},
+                    ],
+    
+                   "GlobalSecondaryIndexes": [
+                       {
+                           # create a global secondary index on user id to allow querying bookings by user id
+                           "IndexName": "UserBookingIndex",
+                           "KeySchema": [
+                               {"AttributeName": "user_id", "KeyType": "HASH"}
+                           ],
+                           "Projection": {
+                               "ProjectionType": "ALL"
+                           }
+                       }
+                   ]
+                    
           }
        ]
     

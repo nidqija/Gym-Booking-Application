@@ -1,0 +1,85 @@
+<div class="container py-5 mt-5" id="titanProfile">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card slot-card p-4 text-center h-100">
+                <div class="mb-4">
+                    <div class="rounded-circle border border-3 border-lime d-inline-block p-1">
+                        <img src="https://ui-avatars.com/api/?name={{ display_name }}&background=CCFF00&color=000" 
+                             class="rounded-circle" width="120" height="120" alt="Profile">
+                    </div>
+                </div>
+                <h2 class="h3 mb-1">{{ display_name }}</h2>
+                <p class="text-secondary small mb-4">MEMBER SINCE 2026</p>
+                
+                <div class="row g-2 text-start">
+                    <div class="col-12">
+                        <div class="p-3 bg-dark border-start border-lime mb-2">
+                            <small class="text-secondary d-block">MEMBERSHIP LEVEL</small>
+                            <span class="fw-bold text-uppercase">Titan Elite</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-dark border-start border-lime">
+                            <small class="text-secondary d-block">SESSIONS</small>
+                            <span class="fw-bold">24</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-dark border-start border-lime">
+                            <small class="text-secondary d-block">STREAK</small>
+                            <span class="fw-bold">5 DAYS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button class="btn btn-outline-secondary btn-sm w-100 mb-2">Edit Profile</button>
+                    <button class="btn btn-danger btn-sm w-100" style="background-color: var(--gym-red); border: none;">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <h2 class="display-6 mb-0">Your Schedule</h2>
+                <span class="badge bg-lime text-dark px-3 py-2">3 ACTIVE BOOKINGS</span>
+            </div>
+
+            <div id="user-bookings" class="vstack gap-3">
+                {% for booking in user_bookings %}
+                <div class="card slot-card p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center border-end border-secondary">
+                            <h4 class="mb-0 fw-bold">{{ booking.date_day }}</h4>
+                            <small class="text-secondary uppercase">{{ booking.date_month }}</small>
+                        </div>
+                        <div class="col-md-6 ps-4">
+                            <h5 class="mb-1 text-lime">{{ booking.session_name }}</h5>
+                            <p class="mb-0 text-secondary small">
+                                <i class="bi bi-clock me-1"></i> {{ booking.start_time }} - {{ booking.end_time }}
+                            </p>
+                            <p class="mb-0 text-secondary small">
+                                <i class="bi bi-geo-alt me-1"></i> Power Zone - Floor 2
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    hx-delete="/bookings/cancel/{{ booking.id }}"
+                                    hx-confirm="Are you sure you want to cancel this Titan session?"
+                                    hx-target="closest .card"
+                                    hx-swap="outerHTML">
+                                <i class="bi bi-x-lg me-1"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 border border-secondary border-dashed">
+                    <p class="text-secondary">No active bookings. Time to hit the iron!</p>
+                    <a href="/" class="btn btn-lime">Browse Slots</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-from fastapi import Cookie, Request, Depends
+from fastapi import Cookie, Depends
 from typing import Optional
 from Model.users import User 
 

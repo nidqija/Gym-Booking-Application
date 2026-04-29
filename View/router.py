@@ -1,5 +1,4 @@
 from typing import Optional
-
 from fastapi import APIRouter, Depends, FastAPI, Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -13,6 +12,8 @@ from typing import Optional
 from Service.dependency import get_current_user
 from Model.sessions import Session
 from Service.home_service import HomeService
+from Service.gym_dates_service import GymDatesService
+from datetime import datetime, timedelta
 
 
 # user interface router
@@ -32,9 +33,27 @@ async def render_home(request: Request, current_user= Depends(get_current_user))
 
 @router.get("/schedule", response_class=HTMLResponse)
 async def render_schedule(request: Request, current_user = Depends(get_current_user)):  
+    blocked = GymDatesService.get_blocked_dates()
+
+    # generate a list of upcoming dates for the next 30 days and mark them as blocked or available
+    # init the list
+    upcoming = []
+
+    # loop through the next 30 days and add them to the list with the blocked status
+    for i in range(31):
+        # calculate the date and format it as a string
+        date = datetime.now() + timedelta(days=i)
+        # format the date as a string in the format of "YYYY-MM-DD" for easier comparison with blocked dates
+        date_str = date.strftime("%Y-%m-%d")
+        # append the date and its blocked status to the upcoming list
+        upcoming.append({
+            "date": date_str,
+            "is_blocked": date_str in blocked
+        })
+
     page_factory = PageFactory.create_page(PageType.BOOKING)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "upcoming": upcoming} , request=request)
 
 
 @router.get("/sign-in", response_class=HTMLResponse)

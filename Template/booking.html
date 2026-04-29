@@ -161,11 +161,11 @@
                         hx-target="#slot-container"
                         hx-trigger="change"
                         onchange="this.setAttribute('hx-get', '/slots/' + this.value); htmx.process(this);">
-                    <option value="apr-23" selected>Thursday, April 23</option>
-                    <option value="apr-24">Friday, April 24</option>
-                    <option value="apr-25">Saturday, April 25</option>
-                    <option value="apr-26">Sunday, April 26</option>
-                    <option value="apr-27">Monday, April 27</option>
+                    {% for day in upcoming %}
+                        <option value="{{ day.date }}" {% if day.is_blocked %}disabled{% endif %}>
+                            {{ day.date }}
+                        </option>
+                    {% endfor %}
                 </select>
             </div>
         </section>

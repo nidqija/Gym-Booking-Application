@@ -85,6 +85,21 @@ class DatabaseRegistryManager:
                         "ReadCapacityUnits": 5,
                         "WriteCapacityUnits": 5
                     },
+          } ,
+          {
+              "TableName" : "GymAvailability",
+                "KeySchema": [
+                        {"AttributeName": "gym_available_id", "KeyType": "HASH"}
+                    ],
+    
+                    "AttributeDefinitions": [
+                        {"AttributeName": "gym_available_id", "AttributeType": "S"}
+                    ],
+    
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 4,
+                        "WriteCapacityUnits": 4
+                    },
           }
        ]
     

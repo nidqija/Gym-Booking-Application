@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from View.users import router as user_router
+from View.router import router as user_router
 from Model.database_service import DatabaseRegistryManager
 
 

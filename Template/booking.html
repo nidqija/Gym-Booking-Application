@@ -145,8 +145,8 @@
     <header class="page-header">
         <div class="container">
             <div class="divider"></div>
-            <h1 class="display-4 fw-bold">CLAIM YOUR SESSION</h1>
-            <p class="text-secondary text-uppercase fw-bold">Select a date to view high-intensity slots</p>
+            <h1 class="display-4 fw-bold">RESERVE YOUR SESSION</h1>
+            <p class="text-secondary text-uppercase fw-bold">Select a date to reserve your preferred time slot</p>
         </div>
     </header>
 
@@ -171,49 +171,22 @@
         </section>
 
         <section id="slot-container">
-            <h5 class="text-secondary mb-4"><i class="bi bi-lightning-charge me-2"></i> 2. CHOOSE DISCIPLINE</h5>
-            
+            <h5 class="text-secondary mb-4"><i class="bi bi-lightning-charge me-2"></i> 2. CHOOSE AVAILABLE SLOTS</h5>
+            {% for session in all_sessions %}
             <div class="time-card shadow-sm">
                 <div class="time-info">
-                    <span class="time-range">08:00 AM - 09:30 AM</span>
-                    <h3>Morning Strength</h3>
+                    <span class="time-range">{{ session.start_time }} - {{ session.end_time }}</span>
+                    <h3>{{ session.available_sessions }} Session</h3>
                 </div>
                 <button class="btn btn-titan" 
                         hx-post="/bookings/reserve" 
-                        hx-vals='{"slot_id": "str_01"}'
+                        hx-vals='{"slot_id": "{{ session.session_id }}"}'
                         hx-swap="outerHTML">
                     Reserve Slot
                     <span class="spinner-border spinner-border-sm htmx-indicator"></span>
                 </button>
             </div>
-
-            <div class="time-card shadow-sm">
-                <div class="time-info">
-                    <span class="time-range">11:00 AM - 12:30 PM</span>
-                    <h3>Tactical Cardio</h3>
-                </div>
-                <button class="btn btn-titan" 
-                        hx-post="/bookings/reserve" 
-                        hx-vals='{"slot_id": "cardio_01"}'
-                        hx-swap="outerHTML">
-                    Reserve Slot
-                    <span class="spinner-border spinner-border-sm htmx-indicator"></span>
-                </button>
-            </div>
-
-            <div class="time-card shadow-sm">
-                <div class="time-info">
-                    <span class="time-range">05:30 PM - 07:00 PM</span>
-                    <h3>Powerlifting Lab</h3>
-                </div>
-                <button class="btn btn-titan" 
-                        hx-post="/bookings/reserve" 
-                        hx-vals='{"slot_id": "power_01"}'
-                        hx-swap="outerHTML">
-                    Reserve Slot
-                    <span class="spinner-border spinner-border-sm htmx-indicator"></span>
-                </button>
-            </div>
+            {% endfor %}
         </section>
     </main>
 

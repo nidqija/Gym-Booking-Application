@@ -50,10 +50,10 @@ async def render_schedule(request: Request, current_user = Depends(get_current_u
             "date": date_str,
             "is_blocked": date_str in blocked
         })
-
+    view_data = HomeService.get_home_data(current_user)
     page_factory = PageFactory.create_page(PageType.BOOKING)
     template_path = page_factory.get_template_path()
-    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "upcoming": upcoming} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "upcoming": upcoming, **view_data} , request=request)
 
 
 @router.get("/sign-in", response_class=HTMLResponse)

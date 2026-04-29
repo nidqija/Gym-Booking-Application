@@ -1,3 +1,5 @@
+   
+   
    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand fw-bold fs-3" style="font-family: 'Oswald', sans-serif;" hx-get="/"
@@ -14,13 +16,52 @@
                     <li class="nav-item"><a class="nav-link px-3" href="/schedule" >Schedule</a></li>
                     <li class="nav-item"><a class="nav-link px-3" href="/trainers" >Trainers</a></li>
 
-                    {% if display_name %}
-                    <li class="nav-item"><a class="nav-link px-3" href="/profile" >Profile</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="/logout" >Logout</a></li>
-                    {% else %}
-                    <li class="nav-item"><a class="nav-link px-3" href="/sign-in" >Sign In</a></li>
-                    <li class="nav-item"><a class="nav-link px-3" href="/sign-up" >Sign Up</a></li>
-                    {% endif %}
+                   {% if display_name %}
+<li class="nav-item dropdown">
+     <a class="nav-link px-3 text-lime dropdown-toggle shadow-sm" 
+         href="#" 
+         role="button" 
+         data-bs-toggle="dropdown"
+         aria-expanded="false"
+         style="border: 1px solid rgba(204, 255, 0, 0.2); border-radius: 4px;">
+        <i class="bi bi-person-fill me-1"></i> {{ display_name }}
+    </a>
+    
+    <div class="dropdown-menu dropdown-menu-end p-0 mt-2 border-0 shadow-lg" id="profileModal" style="min-width: 280px; background: transparent;">
+        <div class="card slot-card border-lime bg-dark text-white" style="background-color: var(--concrete); border: none;">
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <img src="https://ui-avatars.com/api/?name={{ display_name }}&background=CCFF00&color=000" 
+                         class="rounded-circle border border-2 border-lime p-1" width="60" alt="Profile">
+                </div>
+                <h5 class="fw-bold mb-0 text-white Oswald">{{ display_name }}</h5>
+                <p class="text-lime small mb-3 tracking-wider">TITAN MEMBER</p>
+                
+                <div class="d-flex justify-content-around bg-dark py-2 rounded mb-3">
+                    <div class="text-center">
+                        <small class="text-secondary d-block" style="font-size: 0.65rem;">LEVEL</small>
+                        <span class="fw-bold">04</span>
+                    </div>
+                    <div class="text-center border-start border-secondary px-3">
+                        <small class="text-secondary d-block" style="font-size: 0.65rem;">SESSIONS</small>
+                        <span class="fw-bold">12</span>
+                    </div>
+                </div>
+
+                <div class="vstack gap-2">
+                    <a href="/profile" class="btn btn-sm btn-lime w-100" 
+                       hx-get="/profile" hx-target="body" hx-push-url="true">
+                        VIEW DASHBOARD
+                    </a>
+                    <a href="/logout" class="btn btn-sm btn-outline-secondary w-100 border-secondary text-white">
+                        LOGOUT
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+{% endif %}
                 </ul>
             </div>
         </div>

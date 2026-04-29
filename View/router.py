@@ -1,16 +1,9 @@
-from typing import Optional
-from fastapi import APIRouter, Depends, FastAPI, Request , Response
+from fastapi import APIRouter, Depends,  Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from Patterns.Factory.pageFactory import  PageType,  PageFactory 
 from Patterns.Factory.authFactory import AuthFactory
-from Model.database_service import db
-from fastapi.responses import RedirectResponse
-from fastapi import Cookie
-from typing import Optional
 from Patterns.Service.user_service import get_current_user
-from Model.sessions import Session
 from Patterns.Service.home_service import HomeService
 from Patterns.Service.gym_dates_service import GymDatesService
 from Patterns.Command.booking_command import CreateBookingCommand

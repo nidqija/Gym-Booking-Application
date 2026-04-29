@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr 
+from pydantic import BaseModel 
 from Model.database_service import db
 
 
@@ -9,7 +9,6 @@ class Session(BaseModel):
     end_time: str
     
     
-
     def save(self):
         # this method is for saving the session data to the database
         session_data = self.model_dump()

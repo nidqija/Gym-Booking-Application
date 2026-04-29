@@ -9,7 +9,7 @@ from Model.database_service import db
 from fastapi.responses import RedirectResponse
 from fastapi import Cookie
 from typing import Optional
-from Service.dependency import get_current_user
+from Service.user_service import get_current_user
 from Model.sessions import Session
 from Service.home_service import HomeService
 from Service.gym_dates_service import GymDatesService
@@ -71,6 +71,12 @@ async def render_sign_up(request: Request, current_user = Depends(get_current_us
 
 
 
+@router.post("/reserveslot/{session_id}" , response_class=HTMLResponse)
+async def reserve_slot(request: Request, session_id: str, current_user = Depends(get_current_user)):  
+    pass
+
+
+
 @router.post("/auth/{mode}" , response_class=HTMLResponse)
 async def render_auth_page(request: Request , mode: str):  
     # this variable will receive the form data from user
@@ -120,25 +126,3 @@ async def render_auth_page(request: Request , mode: str):
 
 
 
-"""
-@router.post("/auth/signup", response_class=HTMLResponse)
-async def handle_sign_up(request: Request):
-    form_data = await request.form()
-    full_name = form_data.get("full_name")
-    email = form_data.get("email")
-    password = form_data.get("password")
-
-    dbOperation = db.table("Users").put_item(
-         Item={
-             "user_id": email,
-             "full_name": full_name,
-             "password": password
-         }
-      )
-    
-    if dbOperation["ResponseMetadata"]["HTTPStatusCode"] == 200:
-        return templates.TemplateResponse(name="signup_success.html", context={"request": request} , request=request)
-    
-    else :
-        return templates.TemplateResponse(name="signup_failure.html", context={"request": request} , request=request)
-"""

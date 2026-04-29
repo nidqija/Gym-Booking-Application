@@ -41,5 +41,17 @@ class Session(BaseModel):
                 end_time=item["end_time"]
             ))
         return sessions
+    
+
+    @classmethod
+    def post(cls, session_id: str, available_sessions: str, start_time: str, end_time: str):
+        # this method is for creating a new session and saving it to the database
+        session = cls(
+            session_id=session_id,
+            available_sessions=available_sessions,
+            start_time=start_time,
+            end_time=end_time
+        )
+        return session.save()
         
         

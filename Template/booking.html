@@ -163,7 +163,7 @@
                         onchange="this.setAttribute('hx-get', '/slots/' + this.value); htmx.process(this);">
                     {% for day in upcoming %}
                         <option value="{{ day.date }}" {% if day.is_blocked %}disabled{% endif %}>
-                            {{ day.date }}
+                            {{ day.date }} {% if day.is_blocked %}(Public Holiday or Closed){% endif %}
                         </option>
                     {% endfor %}
                 </select>

@@ -54,12 +54,16 @@ class SignUpAction(AuthAction):
         except Exception as e:
             print(f"DEBUG SIGNUP ERROR: {e}") # This will show in your terminal
             return {"error": str(e)}
-            
+
+
     
 
 # Concrete Factory 
 # this factory creates authentication actions based on the action type provided.
 class AuthFactory:
+    # static method is used to create an authentication action based on the provided action type (signin or signup)
+    # use static when the method does not depend on the instance of the class and 
+    # can be called without creating an object of the class.
     @staticmethod
     # creates an authentication action based on the provided action type (signin or signup)
     # if the action type is not recognized , it raises a value error

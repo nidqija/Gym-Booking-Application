@@ -119,7 +119,7 @@
         <div class="container">
             <h1 class="hero-title mb-3">TRAIN LIKE<br>A TITAN</h1>
             <p class="lead mb-5 text-uppercase fw-bold">Real-time slot booking for serious athletes.</p>
-            <a href="#schedule" class="btn btn-lime btn-lg">View Schedule</a>
+            <a href="/schedule" class="btn btn-lime btn-lg">View Schedule</a>
         </div>
     </header>
 
@@ -153,13 +153,10 @@
                     <h3 class="h4 text-white">{{ session.available_sessions }} Session</h3>
                     <p class="text-secondary">{{ session.start_time }} - {{ session.end_time }}</p>
                     <div class="mt-auto">
-                        <button class="btn btn-lime w-100" 
-                                hx-post="/bookings/reserve" 
-                                hx-vals='{"slot_id": "{{ session.id }}"}'
-                                hx-swap="outerHTML">
+                        <a href="/schedule" class="btn btn-lime w-100">
                             Book Now
                             <span class="spinner-border spinner-border-sm htmx-indicator" role="status"></span>
-                        </button>
+                        </a>
                     </div>
                 </div>
                 

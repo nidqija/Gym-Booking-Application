@@ -4,14 +4,15 @@ from abc import ABC, abstractmethod
 
 
 
-
-
 class Command(ABC):
     @abstractmethod
     async def execute(self):
         pass
 
-    
+    @abstractmethod
+    async def cancel_booking(self):
+        pass
+
 
 class CreateBookingCommand(Command):
     # this command is for creating a new booking and saving it to the database
@@ -30,6 +31,13 @@ class CreateBookingCommand(Command):
             date=self.date
         )
         return booking.save()
+    
+    
+    # this method is for canceling a booking by deleting it from the database based on the booking_id
+    async def cancel_booking(self):
+        return await Booking.delete_booking(self.booking_id)
+    
+    
     
 
 # we can extend this pattern with other commands like update booking, delete booking, etc. 

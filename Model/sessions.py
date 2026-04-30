@@ -52,5 +52,14 @@ class Session(BaseModel):
             end_time=end_time
         )
         return session.save()
+    
+
+    @classmethod
+    async def get_session_by_id(cls, session_id: str):
+        # this method is for retrieving a session from the database based on the session_id and returning it as an instance of the Session class
+        response = db.table("Sessions").get_item(Key={"session_id": session_id})
+        item = response.get("Item", None)
+        
+        return item
         
         

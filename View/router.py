@@ -64,6 +64,12 @@ async def render_sign_up(request: Request, current_user = Depends(get_current_us
     template_path = page_factory.get_template_path()
     return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
 
+@router.get("/my-reservation", response_class=HTMLResponse)
+async def render_my_reservation(request: Request, current_user = Depends(get_current_user)):
+    page_factory = PageFactory.create_page(PageType.MY_RESERVATION)
+    view_data = HomeService.get_home_data(current_user)
+    template_path = page_factory.get_template_path()    
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, **view_data} , request=request)
 
 
 @router.post("/reserveslot/{session_id}" , response_class=HTMLResponse)
@@ -136,6 +142,9 @@ async def render_auth_page(request: Request , mode: str):
         # print the error and return an error page
         print(f"Error: {e}")
         return "<div>Invalid authentication mode. Please try again.</div>"
+    
+
+
 
 
 

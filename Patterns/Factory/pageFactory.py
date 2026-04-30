@@ -5,13 +5,16 @@ from abc import ABC, abstractmethod
 # this is a factory pattern implementation for creating different types of dashboard pages.
 # it uses an abstract class and have multiple classes
 # 
+
+# Enum to represent different page types
 class PageType(Enum):
     HOME = "home.html"
     BOOKING = "booking.html"
     SIGN_IN = "signin.html"
     SIGN_UP = "signup.html"
+    MY_RESERVATION = "reservation.html"
 
-
+# Abstract Factory 
 class PageFactory(ABC):
     @abstractmethod
     def get_name(self) -> str:
@@ -22,7 +25,7 @@ class PageFactory(ABC):
         prefix = "partials/" if is_partial else ""
         return f"{prefix}{self.get_name().value}"
     
-
+# Concrete Factory
 class HomePage(PageFactory):
     def get_name(self) -> str:
         return PageType.HOME
@@ -42,14 +45,18 @@ class SignUpPage(PageFactory):
     def get_name(self) -> str:
         return PageType.SIGN_UP
 
+class MyReservationPage(PageFactory):
+    def get_name(self) -> str:
+        return PageType.MY_RESERVATION
     
-
+# Creator 
 class PageFactory:
     _pages = {
         PageType.HOME: HomePage,
         PageType.BOOKING: SchedulePage,
         PageType.SIGN_IN: SignInPage ,
-        PageType.SIGN_UP: SignUpPage
+        PageType.SIGN_UP: SignUpPage,
+        PageType.MY_RESERVATION: MyReservationPage
     }
 
     @staticmethod

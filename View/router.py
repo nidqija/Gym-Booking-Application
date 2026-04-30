@@ -98,6 +98,25 @@ async def reserve_slot(request: Request, session_id: str, current_user = Depends
         return "<div>Failed to reserve slot. Please try again.</div>"
 
 
+@router.post("/cancelreservation/{booking_id}" , response_class=HTMLResponse)
+async def cancel_reservation(request: Request, booking_id: str, current_user = Depends(get_current_user)):
+    if not current_user:
+        return "<div>Please sign in to cancel a reservation.</div>"
+    
+    command = CreateBookingCommand(
+        booking_id=booking_id,  # Get the booking ID from the path parameter
+        user_id=current_user.email,  
+        session_id="", 
+        date=""  
+    )
+
+    result = await command.cancel_booking()  
+
+    if result == 200:
+        return "<div  class='text-white'>Reservation canceled successfully!</div>"
+    else:
+        return "<div class='text-white'>Failed to cancel reservation. Please try again.</div>"
+
 
 @router.post("/auth/{mode}" , response_class=HTMLResponse)
 async def render_auth_page(request: Request , mode: str):  
@@ -120,9 +139,9 @@ async def render_auth_page(request: Request , mode: str):
             # if signup successed
             # return a success message to the user
             if result.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
-                return "<div>Sign up successful!</div>"
+                return "<div class='text-white'>Sign up successful!</div>"
             else:
-                return "<div>Sign up failed. Please try again.</div>"
+                return "<div class='text-white'>Sign up failed. Please try again.</div>"
         
         if mode == "signin":
             # if signin successed

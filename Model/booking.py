@@ -39,6 +39,13 @@ class Booking(BaseModel):
         return response.get("Items", [])
     
 
+    @staticmethod
+    async def delete_booking(booking_id: str):
+        # this method is for deleting a booking from the database based on the booking_id
+        response = db.table("Bookings").delete_item(Key={"booking_id": booking_id})
+        return response.get("ResponseMetadata", {}).get("HTTPStatusCode", None)
+    
+
     
 
 

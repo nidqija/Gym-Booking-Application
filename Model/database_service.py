@@ -57,21 +57,6 @@ class DatabaseRegistryManager:
                 },    
           },
           {
-             "TableName": "Bookings",
-                "KeySchema": [
-                    {"AttributeName": "booking_id", "KeyType": "HASH"}
-                ],
-
-                "AttributeDefinitions": [
-                    {"AttributeName": "booking_id", "AttributeType": "S"}
-                ],
-
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": 5,
-                    "WriteCapacityUnits": 5
-                },
-          } ,
-          {
               "TableName" : "Sessions",
                 "KeySchema": [
                         {"AttributeName": "session_id", "KeyType": "HASH"}
@@ -115,7 +100,8 @@ class DatabaseRegistryManager:
                         # add user id attribute for global secondary index 
                         {"AttributeName": "user_id", "AttributeType": "S"},
                     ],
-    
+
+                    # define a global secondary index on user_id to allow querying bookings by user_id
                    "GlobalSecondaryIndexes": [
                        {
                            # create a global secondary index on user id to allow querying bookings by user id
@@ -125,9 +111,18 @@ class DatabaseRegistryManager:
                            ],
                            "Projection": {
                                "ProjectionType": "ALL"
-                           }
+                           },
+                            "ProvisionedThroughput": {
+                                 "ReadCapacityUnits": 5,
+                                 "WriteCapacityUnits": 5
+                            },
                        }
-                   ]
+                   ],
+                       
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 5,
+                        "WriteCapacityUnits": 5
+                    },
                     
           }
        ]

@@ -7,6 +7,7 @@ from Patterns.Service.user_service import get_current_user
 from Patterns.Service.home_service import HomeService
 from Patterns.Service.gym_dates_service import GymDatesService
 from Patterns.Command.booking_command import CreateBookingCommand
+from Patterns.Service.booking_service import BookingService
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -68,8 +69,9 @@ async def render_sign_up(request: Request, current_user = Depends(get_current_us
 async def render_my_reservation(request: Request, current_user = Depends(get_current_user)):
     page_factory = PageFactory.create_page(PageType.MY_RESERVATION)
     view_data = HomeService.get_home_data(current_user)
+    user_reservations = await BookingService.get_booking_by_user(current_user.email)
     template_path = page_factory.get_template_path()    
-    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, **view_data} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "reservations": user_reservations, **view_data} , request=request)
 
 
 @router.post("/reserveslot/{session_id}" , response_class=HTMLResponse)

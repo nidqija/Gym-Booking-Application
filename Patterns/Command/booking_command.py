@@ -4,14 +4,11 @@ from abc import ABC, abstractmethod
 
 
 
-
-
 class Command(ABC):
     @abstractmethod
     async def execute(self):
         pass
 
-    
 
 class CreateBookingCommand(Command):
     # this command is for creating a new booking and saving it to the database

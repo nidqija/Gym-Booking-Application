@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from Model.booking import Booking
 from Model.sessions import Session
 

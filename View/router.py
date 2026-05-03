@@ -8,6 +8,7 @@ from Patterns.Service.home_service import HomeService
 from Patterns.Service.gym_dates_service import GymDatesService
 from Patterns.Command.booking_command import CreateBookingCommand
 from Patterns.Service.booking_service import BookingService
+from Patterns.Decorator.qr_code_decorator import QRCodeDecorator
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -120,9 +121,18 @@ async def cancel_reservation(request: Request, booking_id: str, current_user = D
 
 # to be implemented
 
-@router.get("/generate_qr/{booking_id}", response_class=HTMLResponse)
+@router.post("/generate_qr/{booking_id}", response_class=HTMLResponse)
 async def generate_qr(request: Request, booking_id: str, current_user = Depends(get_current_user)):
-    pass
+    
+    form_data = await request.form()
+    booking = await BookingService.get_booking_by_user(current_user.email)
+    booking = next((b for b in booking if b["booking_id"] == booking_id), None)
+    if not booking:
+        return "<div class='text-white'>Booking not found.</div>"
+    qr_decorator = QRCodeDecorator(booking)
+    qr_decorator.generate_qr_code  
+    qr_decorator.print_terminal_qr_code()
+    return "<div class='text-white'>QR code generated and printed in terminal.</div>"
 
 
 @router.post("/auth/{mode}" , response_class=HTMLResponse)

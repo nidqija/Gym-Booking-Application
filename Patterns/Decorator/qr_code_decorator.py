@@ -1,5 +1,5 @@
 from Patterns.Decorator.qr_base import QRCodeBase
-from Service.booking_service import BookingService
+from Patterns.Service.booking_service import BookingService
 
 class QRCodeDecorator:
     # method to initialize the decorator with the booking object
@@ -33,3 +33,6 @@ class QRCodeDecorator:
         if not hasattr(self, "_qr_data"):
             _ = self.generate_qr_code
         QRCodeBase.print_ascii(self._qr_data, invert=True, tty=False)
+
+
+    

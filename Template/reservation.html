@@ -149,13 +149,19 @@
                     </div>
                     <div class="text-end mt-3 mt-md-0">
                         <span class="small text-uppercase fw-bold me-3 status-upcoming">Today</span>
-                        <form hx-post="/cancelreservation/{{ res.booking_id }}" method="POST" style="display:inline;">
-                            <button 
+
+
+                        <form method="POST" hx-post="/generate_qr/{{ res.booking_id }}" style="display:inline;">
+                             <button 
                                 type="submit" 
                                 class="btn-qr-action"
                                 onclick="return confirm('Do you want to generate a QR code for this reservation?');">
                                 <span class="icon">▣</span> Generate QR
                             </button>
+                        </form>
+                        
+                        <form hx-post="/cancelreservation/{{ res.booking_id }}" method="POST" style="display:inline;">
+                           
                             <button type="submit" 
                                     class="btn btn-link text-danger p-0" 
                                     onclick="return confirm('Are you sure you want to cancel this reservation?');">

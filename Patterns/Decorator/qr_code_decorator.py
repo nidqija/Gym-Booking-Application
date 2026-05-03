@@ -1,5 +1,5 @@
 from Patterns.Decorator.qr_base import QRCodeBase
-
+from Service.booking_service import BookingService
 
 class QRCodeDecorator:
     # method to initialize the decorator with the booking object
@@ -18,16 +18,11 @@ class QRCodeDecorator:
     @property
     def generate_qr_code(self):
         if self.booking:
-            # generate a qr code based on the booking information (raw data)
-            qr_data = (
-                f"Booking ID: {self.booking.get('booking_id')}\n"
-                f"User ID: {self.booking.get('user_id')}\n"
-                f"Session ID: {self.booking.get('session_id')}\n"
-                f"Date: {self.booking.get('date')}"
-            )
-            # keep raw data for terminal printing
-            self._qr_data = qr_data
-            return QRCodeBase.generate_qr_code(qr_data)
+            BookingService.get_booking_by_user(self.booking["user_id"])
+            qr_data = f"Booking ID: {self.booking['booking_id']}\nUser ID: {self.booking['user_id']}\nSession ID: {self.booking['session_id']}\nDate: {self.booking['date']}"
+            self._qr_data = qr_data  # store raw data for terminal printing
+
+
 
     def print_terminal_qr_code(self):
         """Print the QR as ASCII in terminal using the raw qr data.

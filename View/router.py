@@ -118,6 +118,13 @@ async def cancel_reservation(request: Request, booking_id: str, current_user = D
         return "<div class='text-white'>Failed to cancel reservation. Please try again.</div>"
 
 
+# to be implemented
+
+@router.get("/generate_qr/{booking_id}", response_class=HTMLResponse)
+async def generate_qr(request: Request, booking_id: str, current_user = Depends(get_current_user)):
+    pass
+
+
 @router.post("/auth/{mode}" , response_class=HTMLResponse)
 async def render_auth_page(request: Request , mode: str):  
     # this variable will receive the form data from user

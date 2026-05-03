@@ -36,7 +36,9 @@ class CreateBookingCommand(Command):
     # this method is for canceling a booking by deleting it from the database based on the booking_id
     async def cancel_booking(self):
         return await Booking.delete_booking(self.booking_id)
-    
+
+
+
     
     
 

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titan Command Center | Elite Admin</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        :root {
+            --onyx: #0F0F0F;
+            --lime: #CCFF00;
+            --concrete: #1E1E1E;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border-glow: rgba(204, 255, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--onyx);
+            color: #E0E0E0;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.2px;
+        }
+
+        /* Typography */
+        .font-oswald { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+        .text-lime { color: var(--lime) !important; }
+
+        /* Dashboard Layout */
+        .dashboard-wrapper { display: flex; min-height: 100vh; }
+        
+        .sidebar-v2 {
+            width: 280px;
+            background: #000;
+            border-right: 1px solid #222;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Modern Stat Cards */
+        .titan-stat-card {
+            background: var(--concrete);
+            border: 1px solid #333;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .titan-stat-card:hover {
+            border-color: var(--lime);
+            box-shadow: 0 0 20px var(--border-glow);
+        }
+
+        .progress-micro {
+            height: 4px;
+            background: #333;
+            margin-top: 15px;
+        }
+
+        .progress-bar-lime { background-color: var(--lime); }
+
+        /* Live Activity Feed */
+        .activity-feed {
+            background: var(--glass);
+            border-left: 1px solid #222;
+            width: 320px;
+            padding: 1.5rem;
+        }
+
+        .feed-item {
+            border-left: 2px solid var(--lime);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* Custom Buttons */
+        .btn-action {
+            background: transparent;
+            border: 1px solid #444;
+            color: white;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: var(--lime);
+            color: black;
+            border-color: var(--lime);
+        }
+
+        /* Glass Search */
+        .search-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #333;
+            color: white;
+            padding: 0.7rem 1rem;
+        }
+
+        .search-input:focus {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--lime);
+            box-shadow: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar-v2">
+        <div class="mb-5">
+            <h2 class="font-oswald text-lime h4 mb-0">TITAN HQ <span class="text-white">v2.0</span></h2>
+            <small class="text-secondary opacity-50">ELITE PERFORMANCE MGMT</small>
+        </div>
+
+        {% include 'component/admin_navbar.html' %}
+
+        <div class="pt-4 border-top border-secondary opacity-50">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-lime me-2" style="width: 10px; height: 10px;"></div>
+                <small class="font-oswald">Admin: Master-1</small>
+            </div>
+        </div>
+    </aside>
+
+   <!-- Replace the MAIN CONTENT section in the previous template with this -->
+<main class="flex-grow-1 p-5">
+    <div class="d-flex justify-content-between align-items-start mb-5">
+        <div>
+            <h1 class="font-oswald display-5 mb-1">COMMAND <span class="text-lime">CENTER</span></h1>
+            <p class="text-secondary">System Pulse: <span class="text-white">All stations operational.</span></p>
+        </div>
+        
+        <!-- SECTION 1: REPORT GENERATION -->
+        <div class="dropdown">
+            <button class="btn btn-lime rounded-0 font-oswald px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i>Generate Report
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark rounded-0 border-lime">
+                <li><a class="dropdown-item" href="#" hx-get="/admin/reports/daily" hx-target="#report-status">Daily Peak Hours</a></li>
+                <li><a class="dropdown-item" href="#" hx-get="/admin/reports/revenue" hx-target="#report-status">Revenue Summary</a></li>
+                <li><a class="dropdown-item" href="#" hx-get="/admin/reports/occupancy" hx-target="#report-status">Occupancy Analytics</a></li>
+                <li><hr class="dropdown-divider border-secondary"></li>
+                <li><a class="dropdown-item text-lime" href="#">Export All (CSV)</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="report-status" class="mb-3"></div>
+
+    <div class="row g-4">
+        <!-- SECTION 2: CHECK-IN QR SCANNER -->
+        <div class="col-lg-5">
+            <div class="card bg-dark border-secondary p-4 h-100">
+                <h3 class="font-oswald h5 mb-4 text-lime"><i class="bi bi-qr-code-scan me-2"></i>Station Scanner</h3>
+                <div class="scanner-viewport border border-lime d-flex align-items-center justify-content-center bg-black mb-3" style="height: 300px; position: relative;">
+                    <div class="scanner-line"></div>
+                    <div class="text-center text-secondary">
+                        <i class="bi bi-camera fs-1 mb-2"></i>
+                        <p class="small">Camera Active...<br>Awaiting Athlete Pass</p>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" id="manual-id" class="form-control bg-onyx border-secondary text-white rounded-0" placeholder="Manual ID Entry...">
+                    <button class="btn btn-outline-lime rounded-0" hx-post="/admin/checkin/manual" hx-include="#manual-id" hx-target="#checkin-result">CHECK IN</button>
+                </div>
+                <div id="checkin-result"></div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: CHECK-IN LOGS (Audit Trail) -->
+        <div class="col-lg-7">
+            <div class="card bg-dark border-secondary p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="font-oswald h5 mb-0 text-white"><i class="bi bi-list-columns-reverse me-2"></i>System Logs</h3>
+                    <span class="badge border border-secondary text-secondary">Live Audit Trail</span>
+                </div>
+                <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                    <table class="table table-dark table-hover small">
+                        <thead class="sticky-top bg-dark">
+                            <tr class="text-secondary font-oswald border-bottom border-secondary">
+                                <th>TIMESTAMP</th>
+                                <th>ATHLETE</th>
+                                <th>EVENT</th>
+                                <th>STATION</th>
+                            </tr>
+                        </thead>
+                        <tbody hx-get="/admin/logs/stream" hx-trigger="every 5s">
+                            <tr>
+                                <td class="text-secondary">04:32:11</td>
+                                <td class="fw-bold">Marcus Vane</td>
+                                <td><span class="text-lime">SCAN_SUCCESS</span></td>
+                                <td>Main-Entrance-A</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">04:30:05</td>
+                                <td class="fw-bold">Sarah Connor</td>
+                                <td><span class="text-danger">EXPIRED_PASS</span></td>
+                                <td>Main-Entrance-A</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">04:28:44</td>
+                                <td class="fw-bold">John Matrix</td>
+                                <td><span class="text-info">MANUAL_ENTRY</span></td>
+                                <td>Admin-Desk</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main> 
+
+    <!-- LIVE FEED SIDEBAR -->
+    <aside class="activity-feed d-none d-xl-block">
+        <h3 class="font-oswald h6 mb-4"><i class="bi bi-broadcast text-danger me-2"></i>Live Access Feed</h3>
+        
+        <div class="feed-item">
+            <div class="d-flex justify-content-between">
+                <strong class="text-white">Sarah Connor</strong>
+                <small class="text-lime">JUST NOW</small>
+            </div>
+            <p class="mb-0 text-secondary">QR Verified: Entrance Main-A</p>
+        </div>
+
+        <div class="feed-item" style="border-left-color: #555;">
+            <div class="d-flex justify-content-between">
+                <strong class="text-white">John Matrix</strong>
+                <small class="text-secondary">4m ago</small>
+            </div>
+            <p class="mb-0 text-secondary">Session Completed: Cardio Zone</p>
+        </div>
+
+        <div class="feed-item">
+            <div class="d-flex justify-content-between">
+                <strong class="text-white">Dutch Schaefer</strong>
+                <small class="text-lime">12m ago</small>
+            </div>
+            <p class="mb-0 text-secondary">QR Verified: Heavy Weight Floor</p>
+        </div>
+    </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

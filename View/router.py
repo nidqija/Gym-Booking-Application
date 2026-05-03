@@ -75,6 +75,7 @@ async def render_my_reservation(request: Request, current_user = Depends(get_cur
     return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "reservations": user_reservations, **view_data} , request=request)
 
 
+
 @router.post("/reserveslot/{session_id}" , response_class=HTMLResponse)
 async def reserve_slot(request: Request, session_id: str, current_user = Depends(get_current_user)):  
     

@@ -125,14 +125,23 @@ async def cancel_reservation(request: Request, booking_id: str, current_user = D
 async def generate_qr(request: Request, booking_id: str, current_user = Depends(get_current_user)):
     
     form_data = await request.form()
-    booking = await BookingService.get_booking_by_user(current_user.email)
-    booking = next((b for b in booking if b["booking_id"] == booking_id), None)
+
+    booking = await BookingService.get_booking_by_id(booking_id, current_user.email)
     if not booking:
-        return "<div class='text-white'>Booking not found.</div>"
+        return "<div class='text-white'>Booking not found. Please check your reservation and try again.</div>"
     qr_decorator = QRCodeDecorator(booking)
-    qr_decorator.generate_qr_code  
-    qr_decorator.print_terminal_qr_code()
-    return "<div class='text-white'>QR code generated and printed in terminal.</div>"
+    qr_code = await qr_decorator.generate_qr_base64()
+
+    return f"""
+    <div class='text-white'>
+       <div class="mb-4">
+        <h2>QR Code for Booking ID: {current_user.email}</h2>
+        </div>
+        <img src="data:image/png;base64,{qr_code}" 
+         alt="Access Pass" 
+         class="img-fluid" />
+    </div>
+    """
 
 
 @router.post("/auth/{mode}" , response_class=HTMLResponse)

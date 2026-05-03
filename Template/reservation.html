@@ -151,14 +151,39 @@
                         <span class="small text-uppercase fw-bold me-3 status-upcoming">Today</span>
 
 
-                        <form method="POST" hx-post="/generate_qr/{{ res.booking_id }}" style="display:inline;">
-                             <button 
-                                type="submit" 
-                                class="btn-qr-action"
-                                onclick="return confirm('Do you want to generate a QR code for this reservation?');">
+                       <form hx-post="/generate_qr/{{ res.booking_id }}" 
+                           hx-target="#qrModalBody-{{ res.booking_id }}" 
+                           hx-indicator="#qr-spinner-{{ res.booking_id }}"
+                           hx-on::before-request="document.getElementById('qrModalBody-{{ res.booking_id }}').innerHTML = '';"
+                           hx-on::after-request="var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('qrModal-{{ res.booking_id }}')); myModal.show();"
+                           style="display:inline;">
+                            
+                            <button type="submit" 
+                                    class="btn-qr-action"
+                                    hx-confirm="Do you want to generate a QR code for this reservation?">
                                 <span class="icon">▣</span> Generate QR
                             </button>
                         </form>
+
+                    <div class="modal fade" id="qrModal-{{ res.booking_id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark border-lime">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title text-lime">Your Access Pass</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center py-4" id="qrModalBody-{{ res.booking_id }}">
+                                <div id="qr-spinner-{{ res.booking_id }}" class="htmx-indicator">
+                                    <div class="spinner-border text-lime" role="status"></div>
+                                    <p class="text-white mt-2">Generating Pass...</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-outline-light rounded-0" data-bs-dismiss="modal">CLOSE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                         
                         <form hx-post="/cancelreservation/{{ res.booking_id }}" method="POST" style="display:inline;">
                            

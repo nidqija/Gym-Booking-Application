@@ -99,13 +99,14 @@ class DatabaseRegistryManager:
                         {"AttributeName": "booking_id", "AttributeType": "S"},
                         # add user id attribute for global secondary index 
                         {"AttributeName": "user_id", "AttributeType": "S"},
+                        {"AttributeName": "session_id", "AttributeType": "S"},
                     ],
 
                     # define a global secondary index on user_id to allow querying bookings by user_id
                    "GlobalSecondaryIndexes": [
                        {
                            # create a global secondary index on user id to allow querying bookings by user id
-                           "IndexName": "UserBookingIndex",
+                           "IndexName": "UserBookingIndex" ,
                            "KeySchema": [
                                {"AttributeName": "user_id", "KeyType": "HASH"}
                            ],
@@ -116,14 +117,33 @@ class DatabaseRegistryManager:
                                  "ReadCapacityUnits": 5,
                                  "WriteCapacityUnits": 5
                             },
+                       } ,
+                       {
+                            # create a global secondary index on session id to allow querying bookings by session id
+                            # when we want to create another relation , add another GSI instance with new relation
+                            "IndexName": "SessionBookingIndex" ,
+                            "KeySchema": [
+                                 {"AttributeName": "session_id", "KeyType": "HASH"},
+                                 {"AttributeName": "user_id", "KeyType": "RANGE"}
+                            ],
+                            "Projection": {
+                                 "ProjectionType": "ALL"
+                            },
+                             "ProvisionedThroughput": {
+                                    "ReadCapacityUnits": 5,
+                                    "WriteCapacityUnits": 5
+                             },
                        }
+
                    ],
+                  
+         
                        
                     "ProvisionedThroughput": {
                         "ReadCapacityUnits": 5,
                         "WriteCapacityUnits": 5
                     },
-                    
+               
           }
        ]
     

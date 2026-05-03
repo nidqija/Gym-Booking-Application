@@ -46,6 +46,30 @@ class Booking(BaseModel):
         return response.get("ResponseMetadata", {}).get("HTTPStatusCode", None)
     
 
+    @staticmethod
+    async def get_booking_by_session(session_id: str , current_user: str):
+        # this method is for retrieving a booking from the database based on the session_id and user_id
+        response = db.table("Bookings").query(
+            IndexName="SessionBookingIndex",  
+            KeyConditionExpression="session_id = :session_id AND user_id = :user_id",
+            ExpressionAttributeValues={":session_id": session_id, ":user_id": current_user}
+        )
+        items = response.get("Items", [])
+        return items[0] if items else None
+    
+
+    @staticmethod
+    async def get_booking_by_id(booking_id: str , current_user: str):
+        response = db.table("Bookings").get_item(Key={"booking_id": booking_id})
+        booking = response.get("Item")
+
+        # Security Check: Ensure the booking actually belongs to the person requesting it
+        if booking and booking.get("user_id") != current_user:
+            return None
+            
+        return booking
+    
+
     
 
 

@@ -1,5 +1,7 @@
 from enum import Enum
 from abc import ABC, abstractmethod
+
+from fastapi import Response
 from Model.database_service import db
 from Model.users import User
 
@@ -54,6 +56,15 @@ class SignUpAction(AuthAction):
         except Exception as e:
             print(f"DEBUG SIGNUP ERROR: {e}") # This will show in your terminal
             return {"error": str(e)}
+        
+
+class SignOutAction(AuthAction):
+    async def execute(self, data: dict):
+        response = Response(status_code=204) # 204 = No Content (very fast)
+        response.delete_cookie(key="user_email") # delete the user cookie to log out the user
+        response.headers["HX-Redirect"] = "/" # redirect to home page after sign out
+        print("User signed out, cookie deleted.") 
+        return response
 
 
     
@@ -72,6 +83,8 @@ class AuthFactory:
             return SignInAction()
         elif action_type == "signup":
             return SignUpAction()
+        elif action_type == "signout":
+            return SignOutAction()
         else:
             raise ValueError(f"Unknown auth action type: {action_type}")
 

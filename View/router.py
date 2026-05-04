@@ -242,3 +242,24 @@ async def render_admin_dashboard(request: Request, current_user = Depends(get_cu
 
 
 
+    
+@router.get("/qr-code-scanner", response_class=HTMLResponse )
+async def render_qr_scanner(request: Request , current_user = Depends(get_current_user)):
+
+    is_admin = current_user and current_user.getUserInfo().get("role") == "admin"
+    if not is_admin:
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = "/" 
+        return response
+    
+    try:
+        page_factory = PageFactory.create_page(PageType.QR_SCANNER)
+        template_path = page_factory.get_template_path()
+
+        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
+
+    except Exception as e:
+        print(f"Error rendering QR scanner page: {e}")
+        return "<div>Error loading QR scanner. Please contact system admin.</div>"
+
+    

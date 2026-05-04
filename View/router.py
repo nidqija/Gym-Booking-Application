@@ -68,9 +68,18 @@ async def render_sign_up(request: Request, current_user = Depends(get_current_us
 
 @router.get("/my-reservation", response_class=HTMLResponse)
 async def render_my_reservation(request: Request, current_user = Depends(get_current_user)):
+
+    user_reservations = []
+
     page_factory = PageFactory.create_page(PageType.MY_RESERVATION)
     view_data = HomeService.get_home_data(current_user)
-    user_reservations = await BookingService.get_booking_by_user(current_user.email)
+
+    if current_user:
+       user_reservations = await BookingService.get_booking_by_user(current_user.email)
+
+    if not current_user:
+        user_reservations = []
+
     template_path = page_factory.get_template_path()    
     return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "reservations": user_reservations, **view_data} , request=request)
 
@@ -174,10 +183,17 @@ async def render_auth_page(request: Request , mode: str):
             # if signin successed
             # return a success message to the user
             if  "Sign in successful" in result:
+                user_role = "admin" if "(Admin)" in result else "user"
+                print(f"DEBUG: User role determined as {user_role} from result: {result}")
                 response = Response(status_code=204) # 204 = No Content (very fast)
                 response.set_cookie(key="user_email", value=data.get("email"), httponly=True) # set a cookie to keep the user logged in
-                response.headers["HX-Redirect"] = "/" 
+
+                if user_role == "admin":
+                    response.headers["HX-Redirect"] = "/admin-dashboard" 
+                else:
+                    response.headers["HX-Redirect"] = "/"
                 print("Cookie set for user:", data.get("email")) 
+                
                 return response
             
                 
@@ -197,8 +213,32 @@ async def render_auth_page(request: Request , mode: str):
         return "<div>Invalid authentication mode. Please try again.</div>"
     
 
+@router.get("/admin-dashboard", response_class=HTMLResponse)
+async def render_admin_dashboard(request: Request, current_user = Depends(get_current_user)):
+    # 1. Strict Authorization Check
+    is_admin = current_user and current_user.getUserInfo().get("role") == "admin"
+    
+    if not is_admin:
+        # If not admin, redirect to home page immediately
+        # Use 303 (See Other) for redirects
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = "/" 
+        return response
 
+    # 2. Admin Logic (only runs if authorized)
+    try:
+        # Use the Factory to get the correct admin page
+        page_factory = PageFactory.create_page(PageType.ADMIN_DASHBOARD)
+        
+        # Gather data for the dashboard
+        view_data = HomeService.get_home_data(current_user)
+        template_path = page_factory.get_template_path()
+        
+        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, **view_data} , request=request)
 
+    except Exception as e:
+        print(f"Error rendering admin dashboard: {e}")
+        return "<div>Error loading dashboard. Please contact system admin.</div>"
 
 
 

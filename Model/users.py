@@ -44,7 +44,8 @@ class User(BaseModel):
             return {
                 "email": item["user_id"],
                 "full_name": item["full_name"],
-                "password": item["password"]
+                "password": item["password"],
+                "role": item.get("role", "user") 
             }
         return None
        

@@ -24,11 +24,22 @@ class AuthAction(ABC):
 class SignInAction(AuthAction):
     async def execute(self, data: dict):
         # authenticate the user using the provided data
-
+        
+        user = None
+        response = {}
         try :
             user = User.get(email=data.get("email"))
+
             if user and user.password == data.get("password"):
-                response = {"message": "Sign in successful"}
+                role = user.getUserInfo().get("role", "user")
+
+                if role == "admin":
+                    return "Sign in successful (Admin)" # Return a clean string
+
+              
+                response = {"message": "Sign in successful", "role": role}
+
+               
                 
             else:
                 response = {"message": "Invalid email or password"}
@@ -37,7 +48,9 @@ class SignInAction(AuthAction):
             print(f"DEBUG SIGNIN ERROR: {e}") 
             response = {"error": str(e)}
         
-        return f"Logging in user with email: {data.get('email')}, response: {response}"
+        role_info = user.getUserInfo().get("role", "N/A") if user else "N/A"
+
+        return f"Logging in user with email: {data.get('email')}, response: {response} , with role: {role_info}"
     
 
 # Product 2 : Sign Up Action

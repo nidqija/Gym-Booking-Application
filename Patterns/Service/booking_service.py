@@ -23,6 +23,11 @@ class BookingService:
                 booking["session_name"] = session_data.get("available_sessions", "Unknown Session")
                 booking["start_time"] = session_data.get("start_time", "Unknown Start Time")
                 booking["end_time"] = session_data.get("end_time", "Unknown End Time")
+
+            else :
+                booking["session_name"] = "Unknown Session"
+                booking["start_time"] = "Unknown Start Time"
+                booking["end_time"] = "Unknown End Time"
                 
         return all_bookings
     

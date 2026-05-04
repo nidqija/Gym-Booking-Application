@@ -179,9 +179,14 @@ async def render_auth_page(request: Request , mode: str):
                 response.headers["HX-Redirect"] = "/" 
                 print("Cookie set for user:", data.get("email")) 
                 return response
+            
                 
             else:
                 return "<div>Sign in failed. Invalid email or password.</div>"
+            
+
+        if mode == "signout":
+             return result
 
         print(result)
 

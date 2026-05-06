@@ -1,9 +1,10 @@
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from View.router import router as user_router
 from Model.database_service import DatabaseRegistryManager
-
+from fastapi.responses import FileResponse
 
 
 @asynccontextmanager
@@ -25,8 +26,20 @@ async def lifespan(app: FastAPI):
 
 # main application instance
 app = FastAPI(title="Gym Booking System", lifespan=lifespan)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+# Route for the service worker
+@app.get("/serviceworker.js")
+async def service_worker():
+    return FileResponse("static/serviceworker.js", media_type="application/javascript")
+
+# Route for the manifest file
+@app.get("/manifest.json")
+async def get_manifest():
+    return FileResponse("static/manifest.json")
+
 app.include_router(user_router)
 
-
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

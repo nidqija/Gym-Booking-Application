@@ -73,6 +73,7 @@ async def render_my_reservation(request: Request, current_user = Depends(get_cur
 
     page_factory = PageFactory.create_page(PageType.MY_RESERVATION)
     view_data = HomeService.get_home_data(current_user)
+    current_date = datetime.now().strftime("%Y-%m-%d")
 
     if current_user:
        user_reservations = await BookingService.get_booking_by_user(current_user.email)
@@ -81,7 +82,7 @@ async def render_my_reservation(request: Request, current_user = Depends(get_cur
         user_reservations = []
 
     template_path = page_factory.get_template_path()    
-    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "reservations": user_reservations, **view_data} , request=request)
+    return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "reservations": user_reservations, "current_date": current_date, **view_data} , request=request)
 
 
 
@@ -239,7 +240,6 @@ async def render_admin_dashboard(request: Request, current_user = Depends(get_cu
     except Exception as e:
         print(f"Error rendering admin dashboard: {e}")
         return "<div>Error loading dashboard. Please contact system admin.</div>"
-
 
 
     

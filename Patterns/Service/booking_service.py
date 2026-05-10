@@ -65,14 +65,22 @@ class BookingService:
 
     @staticmethod
     async def update_booking(booking_id: str, session_id: str, current_user: str):
-        new_status = "ACTIVE"
-        updated_booking = await Booking.update_booking(booking_id, current_user, new_status)
+        updated_booking = await Booking.update_booking(booking_id, current_user, new_status="CHECKED_IN")
+        if not updated_booking:
+          print(f"Update failed for booking {booking_id}")
+          return None
 
-        if updated_booking:
-            session_data = await Session.get_session_by_id(session_id)
+        # Defensive Check 2: Does the session exist?
+        session_data = await Session.get_session_by_id(session_id)
+        
+        if session_data:
             updated_booking["session_name"] = session_data.get("available_sessions", "Unknown Session")
             updated_booking["start_time"] = session_data.get("start_time", "Unknown Start Time")
             updated_booking["end_time"] = session_data.get("end_time", "Unknown End Time")
+        else:
+            # Provide fallbacks if the session is missing
+            print(f"Warning: Session {session_id} not found in database.")
+            updated_booking["session_name"] = "Unknown Session"
         
         return updated_booking
 

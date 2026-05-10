@@ -79,7 +79,6 @@ class Booking(BaseModel):
             # locate the booking based on booking id and user id
             Key={
                 "booking_id": booking_id,
-                "user_id": user_id
             },
             # update the status of booking
             UpdateExpression="SET #s = :status_val",

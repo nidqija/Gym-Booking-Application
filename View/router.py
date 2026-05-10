@@ -13,12 +13,14 @@ from Patterns.Decorator.qr_code_decorator import QRCodeDecorator
 from Model.scan_data import ScanData
 from datetime import datetime, timedelta
 from uuid import uuid4
+from fastapi import WebSocket , WebSocketDisconnect as ws_manager
 
 
 # user interface router
 # use this router to render the home page and other pages
 router = APIRouter(tags=["User Interface"])
 templates = Jinja2Templates(directory="Template")
+ws_manager = WebSocketManager()
 
 
 # home page 
@@ -269,17 +271,27 @@ async def render_qr_scanner(request: Request , current_user = Depends(get_curren
 @router.post("/admin/check-in")
 async def admin_check_in(data : ScanData):
     try:
-        booking = await BookingService.get_booking_by_id(data.booking_id, data.user_email)
+        print(f"Received check-in request for booking ID: {data.reservation_id} by admin: {data.user_id}")
+
+        if data.admin_secret != "supersecretkey":
+            print("Invalid admin secret provided.")
+            return {"status": "error", "message": "Unauthorized. Invalid admin secret."}
+        
+        booking = await BookingService.get_booking_by_id(data.reservation_id, data.user_id)
         if not booking:
             return {"status": "error", "message": "Booking not found."}
         
         if booking.get("status") == "CHECKED_IN":
             return {"status": "error", "message": "User already checked in."}
 
-        updated_booking = await BookingService.update_booking(booking_id=data.booking_id, user_id=data.user_email, new_status="CHECKED_IN")
+        updated_booking = await BookingService.update_booking(
+                booking_id=data.reservation_id, 
+                session_id=data.session_id,
+                current_user=data.user_id
+         )
         
         if updated_booking:
-            WebSocketManager.notify_user(data.booking_id, {"message": "Your check-in was successful!"})
+            await ws_manager.notify_user(data.reservation_id, {"message": "Your check-in was successful!"})
             return {"status": "success", "message": "User checked in successfully."}
         else:
             return {"status": "error", "message": "Failed to check in user. Please try again."}
@@ -287,7 +299,19 @@ async def admin_check_in(data : ScanData):
     except Exception as e:
         print(f"Error during check-in: {e}")
         return {"status": "error", "message": "An error occurred during check-in. Please try again."}
-    
+
+
+@router.websocket("/ws/booking-updates/{booking_id}")
+async def websocket_endpoint(websocket:WebSocket , booking_id: str):
+   
+    await ws_manager.connect(booking_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        await ws_manager.disconnect(booking_id)
 
 
 

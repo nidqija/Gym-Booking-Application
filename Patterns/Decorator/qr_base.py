@@ -3,6 +3,9 @@ import io
 import base64
 
 
+
+# Decorator Pattern
+# this pattern is used to 
 class QRCodeBase:
     # this function is used 
     def __init__(self, data: str):

@@ -1,4 +1,6 @@
 
+from urllib import response
+
 from pydantic import BaseModel, EmailStr 
 from Model.database_service import db
 
@@ -69,6 +71,31 @@ class Booking(BaseModel):
             
         return booking
     
+    @staticmethod
+    async def update_booking(booking_id: str , user_id: str , new_status: str = "ACTIVE" ):
+        # fetch the booking table
+        response = db.table("Bookings").update_item(
+            # locate the booking based on booking id and user id
+            Key={
+                "booking_id": booking_id,
+                "user_id": user_id
+            },
+            # update the status of booking
+            UpdateExpression="SET #s = :status_val",
+            
+            # use expression attribute names to avoid reserved keywords in dynamodb
+            ExpressionAttributeNames={
+                "#s": "status"
+            },
+            # set the new status value for the booking
+            ExpressionAttributeValues={
+                ":status_val": new_status
+            },
+            # return the updated booking data after the update operation back to DynamoDB
+            ReturnValues="ALL_NEW"
+        )
+        # return the values from updated data back to any caller 
+        return response.get("Attributes", {})   
 
     
 

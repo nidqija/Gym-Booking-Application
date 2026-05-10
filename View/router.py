@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends,  Request , Response
+from fastapi import APIRouter, Depends, HTTPException,  Request , Response
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from Patterns.Factory.pageFactory import  PageType,  PageFactory 
@@ -9,6 +9,7 @@ from Patterns.Service.gym_dates_service import GymDatesService
 from Patterns.Command.booking_command import CreateBookingCommand
 from Patterns.Service.booking_service import BookingService
 from Patterns.Decorator.qr_code_decorator import QRCodeDecorator
+from Model.scan_data import ScanData
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -261,5 +262,29 @@ async def render_qr_scanner(request: Request , current_user = Depends(get_curren
     except Exception as e:
         print(f"Error rendering QR scanner page: {e}")
         return "<div>Error loading QR scanner. Please contact system admin.</div>"
-
     
+
+@router.post("/admin/check-in")
+async def admin_check_in(data : ScanData):
+    try:
+        booking = await BookingService.get_booking_by_id(data.booking_id, data.user_email)
+        if not booking:
+            return {"status": "error", "message": "Booking not found."}
+        
+        if booking.get("status") == "CHECKED_IN":
+            return {"status": "error", "message": "User already checked in."}
+
+        updated_booking = await BookingService.update_booking(booking_id=data.booking_id, user_id=data.user_email, new_status="CHECKED_IN")
+        
+        if updated_booking:
+            return {"status": "success", "message": "User checked in successfully."}
+        else:
+            return {"status": "error", "message": "Failed to check in user. Please try again."}
+        
+    except Exception as e:
+        print(f"Error during check-in: {e}")
+        return {"status": "error", "message": "An error occurred during check-in. Please try again."}
+    
+
+
+

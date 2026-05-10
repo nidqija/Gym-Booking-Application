@@ -10,6 +10,7 @@ class Booking(BaseModel):
     user_id: str
     session_id: str
     date: str
+    status: str = "RESERVED"
 
     def save(self):
         # this method is for saving the booking data to the database

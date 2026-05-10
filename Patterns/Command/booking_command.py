@@ -16,11 +16,12 @@ class Command(ABC):
 
 class CreateBookingCommand(Command):
     # this command is for creating a new booking and saving it to the database
-    def __init__(self, booking_id: str, user_id: str, session_id: str, date: str):
+    def __init__(self, booking_id: str, user_id: str, session_id: str, date: str , status: str = "RESERVED"):
         self.booking_id = booking_id
         self.user_id = user_id
         self.session_id = session_id
         self.date = date
+        self.status = status
 
     # overriding the method to create a new booking and saving it to the database
     async def execute(self):
@@ -28,7 +29,8 @@ class CreateBookingCommand(Command):
             booking_id=self.booking_id,
             user_id=self.user_id,
             session_id=self.session_id,
-            date=self.date
+            date=self.date,
+            status=self.status
         )
         return booking.save()
     

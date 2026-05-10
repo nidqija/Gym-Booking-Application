@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from Patterns.Factory.pageFactory import  PageType,  PageFactory 
 from Patterns.Factory.authFactory import AuthFactory
+from Patterns.Observer.WebSocketManager import WebSocketManager
 from Patterns.Service.user_service import get_current_user
 from Patterns.Service.home_service import HomeService
 from Patterns.Service.gym_dates_service import GymDatesService
@@ -100,7 +101,8 @@ async def reserve_slot(request: Request, session_id: str, current_user = Depends
         booking_id=str(uuid4()),  # Generate a unique booking ID
         user_id=current_user.email,  # Get the user ID from the current user
         session_id=session_id,  # Get the session ID from the path parameter
-        date=booking_date  # Get the booking date from the form data
+        date=booking_date , # Get the booking date from the form data
+        status="RESERVED" 
     )
 
     result = await command.execute()  # Execute the command to create the booking
@@ -277,6 +279,7 @@ async def admin_check_in(data : ScanData):
         updated_booking = await BookingService.update_booking(booking_id=data.booking_id, user_id=data.user_email, new_status="CHECKED_IN")
         
         if updated_booking:
+            WebSocketManager.notify_user(data.booking_id, {"message": "Your check-in was successful!"})
             return {"status": "success", "message": "User checked in successfully."}
         else:
             return {"status": "error", "message": "Failed to check in user. Please try again."}

@@ -7,10 +7,7 @@ import base64
 # Decorator Pattern
 # this pattern is used to 
 class QRCodeBase:
-    # this function is used 
-    def __init__(self, data: str):
-        self.data = data
-
+    
     # this method generates a qr code image based on the provided data
     # returns the qr code image as a base64 encoded string that can be used in an HTML img tag
     # will log into terminal to test the generated qr code string

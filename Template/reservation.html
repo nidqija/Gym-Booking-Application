@@ -113,6 +113,28 @@
 
     {% if user %}
        
+    <div class="modal fade" id="checkInModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-success">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-success">
+                        <i class="bi bi-check-circle-fill me-2"></i>Check-in Update
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="display-6 text-success mb-3">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </div>
+                    <p class="mb-2 text-white fw-semibold" id="checkInModalMessage">Check-in Successful!</p>
+                    <p class="mb-0 text-secondary small" id="checkInModalSession">Booking ID: -</p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light rounded-0" data-bs-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
    
     <div class="container py-5 mt-5">
     <div class="d-flex justify-content-between align-items-center mb-5">
@@ -130,6 +152,7 @@
         <h3 class="h5 mb-4 text-white border-bottom border-secondary pb-2">
             <i class="bi bi-calendar-check me-2 text-lime"></i>Today's Sessions
         </h3>
+      
           <div id="today-list">
             <!-- Example Static Card 1 -->
              {% if reservations %}
@@ -260,7 +283,7 @@
                     <i class="bi bi-calendar-x mb-3" style="font-size: 3rem;"></i>
                     <h5 class="mb-0">No upcoming sessions booked</h5>
                     <p class="text-secondary">Book a session to see it here</p>
-`               </div>
+                </div>
                     {% endif %}
                 {% endfor %}
 
@@ -325,17 +348,54 @@
 
 
    <script>
+       // we use websocket to listen for updates on the booking status after check-in
+       // websockets can reduce the need for constant polling and provide real-time feedback to users, enhancing the interactivity of the application.
+       // provide low latency updates to the user about their booking status, such as confirming a successful check-in or alerting them to any issues with their reservation. This can improve the overall user experience by providing immediate feedback without requiring the user to refresh the page or navigate away from their current view.
+       // instead of relying of db querying to check the status of booking after check-in, we can use websocket to push updates to the user when there is a change in booking status. This can help reduce the load on the database and improve the performance of the application.
+        const bookingSockets = {};
+
         function initWebSocket(bookingId){
-             const socket = new WebSocket(`ws://${window.location.host}/ws/booking-updates/${bookingId}`);
+             if (bookingSockets[bookingId] && bookingSockets[bookingId].readyState === WebSocket.OPEN) {
+                return;
+             }
+
+             const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+             const socket = new WebSocket(`${protocol}://${window.location.host}/ws/booking-updates/${bookingId}`);
+             bookingSockets[bookingId] = socket;
              
              socket.onmessage = function(event) {
                 const data = JSON.parse(event.data);
+                console.log("WebSocket message received:", data);
+                
                 if(data.message){
-                    alert(data.message);
+                    document.getElementById('checkInModalMessage').textContent = data.message;
+                    document.getElementById('checkInModalSession').textContent = `Booking ID: ${bookingId}`;
 
+                    const qrModalElement = document.getElementById(`qrModal-${bookingId}`);
+                    if (qrModalElement) {
+                        const qrModal = bootstrap.Modal.getInstance(qrModalElement);
+                        if (qrModal) {
+                            qrModal.hide();
+                        }
+                    }
+
+                    const checkInModalElement = document.getElementById('checkInModal');
+                    const checkInModal = bootstrap.Modal.getOrCreateInstance(checkInModalElement);
+                    checkInModal.show();
+                }       
+             };
+
+         socket.onerror = function(error) {
+                console.error("WebSocket error:", error);
+            };
+
+             socket.onclose = function(event) {
+                console.log("WebSocket connection closed:", event);
+                if (bookingSockets[bookingId] === socket) {
+                    delete bookingSockets[bookingId];
                 }
+             };
         }
-    }
 
 
    </script>

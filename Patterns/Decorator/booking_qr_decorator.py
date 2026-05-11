@@ -6,6 +6,8 @@ from Patterns.Service.booking_service import BookingService
 class BookingQRDecorator(UserDict):
     
     # this class is a decorator for the booking service that adds qr code generation functionality
+    # we are technically taking our booking data and putting it into the qr code generator
+    # we can do the same for session data into the qr code as well
     def __init__(self, booking_data:str):
         self.booking_data = booking_data
         self.qr_code = None
@@ -14,11 +16,9 @@ class BookingQRDecorator(UserDict):
     async def generate_qr_code(self):
 
         if not self.qr_code:
-            qr_content =(
-                f"Booking Details:\n"
-                f"{self.booking_data}\n"
-
-            )
+            booking_id = self.booking_data.get("booking_id")
+            user_id = self.booking_data.get("user_id")
+            qr_content = f"{booking_id}|{user_id}"
 
             self.qr_code = QRCodeBase.generate_qr_code(qr_content)
 

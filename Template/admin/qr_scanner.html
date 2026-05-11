@@ -196,10 +196,11 @@
 
                 // Process the scanned QR code data (e.g., send to server for check-in)
                 const [bookingId, userId] = decodedText.split("|"); // Assuming QR code contains "bookingId|userId"
-                await processCheckIn(bookingId, userId);
+                await processCheckIn(bookingId, userId , "supersecretkey", "sessionId456"); // Replace with actual values
                 
-                // Optionally send the decoded text to the server for verification
-                // Example: htmx.ajax('POST', '/verify', { values: { qr_data: decodedText } });
+                
+
+               
             },
             (errorMessage) => {
                 // Handle scan failure (optional)
@@ -210,13 +211,13 @@
         });
 
 
-        async function processCheckIn(bookingId , userId ){
+        async function processCheckIn(bookingId , userId , adminSecret , sessionId) {
 
             const payload = {
                 reservation_id : bookingId,
                 user_id :  userId, // This should be dynamically set based on the logged-in admin
-                admin_secret : "super_secret_key", // This should be securely stored and validated on the server
-                session_id : "current_session_id" // This should be generated per session for security
+                admin_secret : adminSecret, // This should be securely stored and validated on the server
+                session_id : sessionId // This should be generated per session for security
             }
             try {
                 const response = await fetch('/admin/check-in', {

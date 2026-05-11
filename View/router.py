@@ -271,8 +271,7 @@ async def render_qr_scanner(request: Request , current_user = Depends(get_curren
 @router.post("/admin/check-in")
 async def admin_check_in(data : ScanData):
     try:
-        print(f"Received check-in request for booking ID: {data.reservation_id} by admin: {data.user_id}")
-
+        print(f"DEBUG: Searching for ID: '{data.reservation_id}' and User: '{data.user_id}'")
         if data.admin_secret != "supersecretkey":
             print("Invalid admin secret provided.")
             return {"status": "error", "message": "Unauthorized. Invalid admin secret."}

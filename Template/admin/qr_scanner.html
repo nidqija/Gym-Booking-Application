@@ -184,7 +184,7 @@
         html5QrCode.start(
             { facingMode: "environment" }, 
             qrConfig,
-            (decodedText, decodedResult) => {
+        async  (decodedText, decodedResult) => {
                 // Handle successful scan
                 console.log(`Decoded QR code: ${decodedText}`);
                 document.getElementById('scanner-output').innerHTML = `
@@ -194,6 +194,9 @@
                     </div>
                 `;
 
+                // Process the scanned QR code data (e.g., send to server for check-in)
+                const [bookingId, userId] = decodedText.split("|"); // Assuming QR code contains "bookingId|userId"
+                await processCheckIn(bookingId, userId);
                 
                 // Optionally send the decoded text to the server for verification
                 // Example: htmx.ajax('POST', '/verify', { values: { qr_data: decodedText } });
@@ -205,6 +208,39 @@
         ).catch(err => {
             console.error(`Unable to start scanning: ${err}`);
         });
+
+
+        async function processCheckIn(bookingId , userId ){
+
+            const payload = {
+                reservation_id : bookingId,
+                user_id :  userId, // This should be dynamically set based on the logged-in admin
+                admin_secret : "super_secret_key", // This should be securely stored and validated on the server
+                session_id : "current_session_id" // This should be generated per session for security
+            }
+            try {
+                const response = await fetch('/admin/check-in', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json'
+                   },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if(result.status === "success"){
+                    alert("Check-in successful!");
+                } else {
+                    alert("Check-in failed: " + result.message);
+                }
+            }
+
+            catch (error) {
+                console.error("Error during check-in:", error);
+                alert("An error occurred while processing the check-in. Please try again.");
+            }
+        }
+        
 
         
     </script>

@@ -361,3 +361,22 @@ async def render_report_generation(request: Request , current_user = Depends(get
     except Exception as e:
         print(f"Error rendering report generation page: {e}")
         return "<div>Error loading report generation. Please contact system admin.</div>"
+    
+
+@router.get("/schedule-manager", response_class=HTMLResponse)
+async def render_schedule_manager(request: Request , current_user = Depends(get_current_user)):
+    is_admin = current_user and current_user.getUserInfo().get("role") == "admin"
+    if not is_admin:
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = "/" 
+        return response
+    
+    try:
+        page_factory = PageFactory.create_page(PageType.SCHEDULE_MANAGER)
+        template_path = page_factory.get_template_path()
+
+        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
+
+    except Exception as e:
+        print(f"Error rendering schedule manager page: {e}")
+        return "<div>Error loading schedule manager. Please contact system admin.</div>"

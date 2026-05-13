@@ -95,9 +95,46 @@ class Booking(BaseModel):
             ReturnValues="ALL_NEW"
         )
         # return the values from updated data back to any caller 
-        return response.get("Attributes", {})   
+        return response.get("Attributes", {}) 
+
+
+
+    @staticmethod
+    async def get_booking_by_fullname(full_name: str):
+        # this method is for retrieving a booking from the database based on the full name of the user and user_id
+        response = db.table("Bookings").query(
+            IndexName="FullNameBookingIndex",  
+            KeyConditionExpression="full_name = :full_name",
+            ExpressionAttributeValues={":full_name": full_name}
+        )
+        items = response.get("Items", [])
+        return items[0] if items else None  
+    
 
     
+    @staticmethod
+    async def update_booking_by_fullname(full_name: str, new_status: str = "CHECKED_IN"):
+        # 1. Locate the booking using the GSI
+        # This 'locates' the booking_id we need
+        booking_record = await Booking.get_booking_by_fullname(full_name)
+        
+        if not booking_record:
+            print(f"Error: Could not locate booking for {full_name}")
+            return None
+
+        # 2. Extract the actual Primary Key
+        actual_id = booking_record.get("booking_id")
+
+        response = db.table("Bookings").update_booking(
+            Key={"booking_id": actual_id},
+            UpdateExpression="SET #s = :status_val",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={":status_val": new_status},
+            ReturnValues="ALL_NEW"
+        )
+        return response.get("Attributes", {})
+
+        
 
 
 

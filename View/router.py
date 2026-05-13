@@ -313,4 +313,34 @@ async def websocket_endpoint(websocket:WebSocket , booking_id: str):
         await ws_manager.disconnect(booking_id)
 
 
+@router.post("/admin/checkin/manual" , response_class=HTMLResponse)
+async def manual_check_in(request: Request):
+    form_data = await request.form()
+    email = form_data.get("email")
+    
+    
+    if not email:
+        return """<span class="text-warning small">Please enter an email</span>"""
+
+   
+    booking = await BookingService.get_booking_by_email(email)
+    
+    if not booking:
+        return """<span class="text-danger small">No booking found for this email</span>"""
+    
+    # 3. Check status
+    if booking.get("status") == "CHECKED_IN":
+        return f"""<span class="text-info small">{email} is already checked in</span>"""
+
+   
+    success = await BookingService.update_booking_by_email(
+        email=email,
+        new_status="CHECKED_IN"
+    )
+
+    if success:
+        return f"""<span class="text-lime small">SUCCESS: {email} checked in!</span>"""
+    
+    return """<span class="text-danger small">Database update failed</span>"""
+
 

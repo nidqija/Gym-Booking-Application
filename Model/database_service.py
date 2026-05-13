@@ -100,6 +100,7 @@ class DatabaseRegistryManager:
                         # add user id attribute for global secondary index 
                         {"AttributeName": "user_id", "AttributeType": "S"},
                         {"AttributeName": "session_id", "AttributeType": "S"},
+                        {"AttributeName": "full_name", "AttributeType": "S"}
                     ],
 
                     # define a global secondary index on user_id to allow querying bookings by user_id
@@ -125,6 +126,23 @@ class DatabaseRegistryManager:
                             "KeySchema": [
                                  {"AttributeName": "session_id", "KeyType": "HASH"},
                                  {"AttributeName": "user_id", "KeyType": "RANGE"}
+                            ],
+                            "Projection": {
+                                 "ProjectionType": "ALL"
+                            },
+                             "ProvisionedThroughput": {
+                                    "ReadCapacityUnits": 5,
+                                    "WriteCapacityUnits": 5
+                             },
+                       },
+                       {
+                            # create a global secondary index on full name to allow querying bookings by full name
+                            # when we want to create another relation , add another GSI instance with new relation
+                            "IndexName": "FullNameBookingIndex" ,
+                            "KeySchema": [
+                                 {"AttributeName": "full_name", "KeyType": "HASH"},
+                                 {"AttributeName": "user_id", "KeyType": "RANGE"} 
+
                             ],
                             "Projection": {
                                  "ProjectionType": "ALL"

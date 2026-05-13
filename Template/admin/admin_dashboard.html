@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         :root {
@@ -162,18 +163,28 @@
         <div class="col-lg-5">
             <div class="card bg-dark border-secondary p-4 h-100">
                 <h3 class="font-oswald h5 mb-4 text-lime"><i class="bi bi-qr-code-scan me-2"></i>Station Scanner</h3>
-                <div class="scanner-viewport border border-lime d-flex align-items-center justify-content-center bg-black mb-3" style="height: 300px; position: relative;">
-                    <div class="scanner-line"></div>
-                    <div class="text-center text-secondary">
-                        <i class="bi bi-camera fs-1 mb-2"></i>
-                        <p class="small">Camera Active...<br>Awaiting Athlete Pass</p>
+                <div class="scanner-viewport border border-lime d-flex align-items-center justify-content-center bg-black mb-3" id="reader" style="height: 300px; position: relative;">
+                    
+                     <!-- Scanner Box -->
+                    <div class="scanner-viewport" >
+                        <div class="scan-line"></div>
+                        <div class="c-brk tl"></div>
+                        <div class="c-brk tr"></div>
+                        <div class="c-brk bl"></div>
+                        <div class="c-brk br"></div>
+                        
+                        <div class="h-100 d-flex flex-column align-items-center justify-content-center opacity-25">
+                            <i class="bi bi-qr-code-scan fs-1 mb-2"></i>
+                            <p class="small font-oswald">Awaiting Signal...</p>
+                        </div>
                     </div>
+
                 </div>
                 <div class="input-group mb-3">
-                    <input type="text" id="manual-id" class="form-control bg-onyx border-secondary text-white rounded-0" placeholder="Manual ID Entry...">
-                    <button class="btn btn-outline-lime rounded-0" hx-post="/admin/checkin/manual" hx-include="#manual-id" hx-target="#checkin-result">CHECK IN</button>
+                    <input type="text" id="manual-id" class="form-control bg-onyx border-secondary text-black rounded-0" placeholder="Manual ID Entry...">
+                    <button class="btn btn-lime rounded-0" hx-post="/admin/checkin/manual" hx-include="#manual-id" hx-target="#checkin-result">CHECK IN</button>
                 </div>
-                <div id="checkin-result"></div>
+                
             </div>
         </div>
 
@@ -223,6 +234,77 @@
 
    
 </div>
+
+<script>
+     const html5QrCode = new Html5Qrcode("reader");
+        const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            qrConfig,
+        async  (decodedText, decodedResult) => {
+                // Handle successful scan
+                console.log(`Decoded QR code: ${decodedText}`);
+                document.getElementById('scanner-output').innerHTML = `
+                    <div class="d-flex align-items-center small">
+                        <i class="bi bi-check-circle-fill text-lime me-2"></i>
+                        <span class="text-lime">Scan successful: ${decodedText}</span>
+                    </div>
+                `;
+
+                // Process the scanned QR code data (e.g., send to server for check-in)
+                const [bookingId, userId] = decodedText.split("|"); // Assuming QR code contains "bookingId|userId"
+                await processCheckIn(bookingId, userId , "supersecretkey", "sessionId456"); // Replace with actual values
+                
+                
+
+               
+            },
+            (errorMessage) => {
+                // Handle scan failure (optional)
+                console.warn(`QR code scan error: ${errorMessage}`);
+            }
+        ).catch(err => {
+            console.error(`Unable to start scanning: ${err}`);
+        });
+
+        // Process check-in with server
+         async function processCheckIn(bookingId , userId , adminSecret , sessionId) {
+
+            const payload = {
+                reservation_id : bookingId,
+                user_id :  userId, // This should be dynamically set based on the logged-in admin
+                admin_secret : adminSecret, // This should be securely stored and validated on the server
+                session_id : sessionId // This should be generated per session for security
+            }
+            try {
+                const response = await fetch('/admin/check-in', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json'
+                   },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if(result.status === "success"){
+                    alert("Check-in successful!");
+                } else {
+                    alert("Check-in failed: " + result.message);
+                }
+            }
+
+            catch (error) {
+                console.error("Error during check-in:", error);
+                alert("An error occurred while processing the check-in. Please try again.");
+            }
+        }
+
+
+         
+
+
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

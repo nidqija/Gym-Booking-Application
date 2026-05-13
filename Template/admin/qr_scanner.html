@@ -151,12 +151,18 @@
 
         <!-- Manual Entry Area -->
         <div class="mb-3">
-            <label class="small text-secondary font-oswald mb-2">Manual Authentication</label>
+            <label class="small text-secondary font-oswald mb-2">Manual Authentication ( EMAIL )</label>
             <div class="input-group">
-                <input type="text" class="form-control form-control-titan" placeholder="ATHLETE ID">
-                <button class="btn btn-titan px-3" hx-post="/verify">
-                    <i class="bi bi-arrow-right"></i>
-                </button>
+                <form hx-post="/admin/checkin/manual" hx-target="#scanner-output" hx-swap="innerHTML" method="post">
+                    <input type="email" class="form-control form-control-titan text-white" placeholder="USER EMAIL" name="email">
+                    <input type="hidden" name="admin_secret" value="supersecretkey">
+                    <button class="btn btn-titan px-3" type="submit">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+
+                    <div class="scanner-output"></div>
+                    
+                </form>
             </div>
         </div>
 
@@ -241,6 +247,8 @@
                 alert("An error occurred while processing the check-in. Please try again.");
             }
         }
+
+
         
 
         

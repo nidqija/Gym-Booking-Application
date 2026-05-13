@@ -16,6 +16,7 @@ class PageType(Enum):
     ADMIN_DASHBOARD = "admin/admin_dashboard.html"
     QR_SCANNER = "admin/qr_scanner.html"
     REPORT_GENERATION = "admin/report_generation.html"
+    SCHEDULE_MANAGER = "admin/schedule_manager.html"
 # Abstract Factory 
 class PageFactory(ABC):
     @abstractmethod
@@ -63,6 +64,11 @@ class QRScannerPage(PageFactory):
 class ReportGenerationPage(PageFactory):
     def get_name(self) -> str:
         return PageType.REPORT_GENERATION
+    
+
+class ScheduleManagerPage(PageFactory):
+    def get_name(self) -> str:
+        return PageType.SCHEDULE_MANAGER
 
 # Creator 
 class PageFactory:
@@ -74,7 +80,8 @@ class PageFactory:
         PageType.MY_RESERVATION: MyReservationPage,
         PageType.ADMIN_DASHBOARD: AdminDashboardPage,
         PageType.QR_SCANNER: QRScannerPage,
-        PageType.REPORT_GENERATION: ReportGenerationPage
+        PageType.REPORT_GENERATION: ReportGenerationPage,
+        PageType.SCHEDULE_MANAGER: ScheduleManagerPage
     }
 
     @staticmethod

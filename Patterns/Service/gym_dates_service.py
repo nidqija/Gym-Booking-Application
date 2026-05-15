@@ -13,6 +13,12 @@ class GymDatesService:
             return gym_availability.blocked_dates
         return []
     
+
+
+    @staticmethod
+    async def update_blocked_dates(dates: list[str], updated_by: str):
+        return await GymAvailable.create_blocked_dates(dates, updated_by)
+    
     
     
 

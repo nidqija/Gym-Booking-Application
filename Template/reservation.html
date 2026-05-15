@@ -142,7 +142,7 @@
             <h2>My Reservations</h2>
             <p class="text-secondary">Track your upcoming and past training sessions</p>
         </div>
-        <a href="/booking" class="btn btn-outline-light rounded-0 font-oswald">
+        <a href="/schedule" class="btn btn-outline-light rounded-0 font-oswald">
             <i class="bi bi-plus-lg me-2"></i>BOOK SESSION
         </a>
     </div>
@@ -223,15 +223,13 @@
                     </div>
                 </div>
             </div>
+                {% endfor %}
              {% else %}
                 <div class="empty-state text-center">
                     <i class="bi bi-calendar-x mb-3" style="font-size: 3rem;"></i>
                     <h5 class="mb-0">No upcoming sessions booked</h5>
                     <p class="text-secondary">Book a session to see it here</p>
-              </div>
-               
-                 
-                {% endfor %}
+                </div>
                 {% endif %}
 
            
@@ -277,16 +275,13 @@
                     </div>
                 </div>
             </div>
-            
+                {% endfor %}
             {% else %}
                 <div class="empty-state text-center">
                     <i class="bi bi-calendar-x mb-3" style="font-size: 3rem;"></i>
                     <h5 class="mb-0">No upcoming sessions booked</h5>
                     <p class="text-secondary">Book a session to see it here</p>
                 </div>
-                  
-                {% endfor %}
-
             {% endif %}
            
     </section>
@@ -296,10 +291,10 @@
         <h3 class="h5 mb-4 text-secondary border-bottom border-secondary pb-2">
             <i class="bi bi-clock-history me-2"></i>Past Sessions
         </h3>
+        <div id="past-sessions" style="opacity: 0.6;">
          {% if reservations %}
                 {% for res in reservations if res.date < current_date %}
                  
-        <div id="past-sessions" style="opacity: 0.6;">
             <!-- Example Static Card 2 -->
             <div class="card res-card border-0 rounded-0 shadow-sm mb-3" style="border-left-color: #666;">
                 <div class="card-body d-flex flex-wrap align-items-center justify-content-between">
@@ -321,16 +316,14 @@
                     </div>
                 </div>
             </div>
+                {% endfor %}
              {% else %}
          <div class="empty-state text-center">
             <i class="bi bi-clock-history mb-3" style="font-size: 3rem;"></i>
             <h5 class="mb-0">No past sessions found</h5>
             <p class="text-secondary">Your past sessions will appear here</p>
          </div>
-                   
-                {% endfor %}
             {% endif %}
-                
         </div>
 
    {% else %}
@@ -341,7 +334,8 @@
             <a href="/sign-in" class="btn btn-sm btn-lime px-4 fw-bold mt-3">
                 SIGN IN
             </a>
- {% endif %}        
+        </div>
+    {% endif %}        
     </section>
     
 </div>

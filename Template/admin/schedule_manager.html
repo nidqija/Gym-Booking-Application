@@ -227,7 +227,7 @@
             <div class="col-lg-4">
                 <div class="control-sidebar shadow-lg">
                     <h3 class="h5 mb-4 border-bottom border-secondary pb-2">Manual Override</h3>
-                          <form action="/admin/update-blocked-dates" method="post">
+                    <form action="/admin/update-blocked-dates" method="post">
                     <div class="mb-4">
                         <label class="form-label">Select Date Range</label>
                         
@@ -255,7 +255,6 @@
                     </button>
 
                 </form>
-                    
                     <div class="mt-4 pt-3 border-top border-secondary">
                         <small class="text-secondary d-block mb-2 text-uppercase fw-bold">Legend</small>
                         <div class="d-flex gap-3">
@@ -279,18 +278,24 @@
                         <div class="col text-center text-secondary fw-bold small">SUN</div>
                     </div>
 
-                    <!-- The actual dynamic grid -->
                     <div class="row row-cols-7 g-2" id="calendar-grid">
                         {% for day in upcoming %}
                         <div class="col">
-                            <div class="day-box {% if day.is_blocked %}blocked{% else %}clickable{% endif %}"
+                            <div class="day-box {% if day.is_blocked %}is-blocked{% endif %}"
                                 {% if not day.is_blocked %}
                                     hx-get="/slots/{{ day.date }}" 
                                     hx-target="#slot-container" 
                                     hx-trigger="click"
-                                {% endif %}>
+                                {% else %}
+                                    {# Trigger the cancellation modal for blocked dates #}
+                                    hx-get="/cancel-preview/{{ day.date }}"
+                                    hx-target="#modals-here"
+                                    hx-trigger="click"
+                                {% endif %}
+                                data-bs-toggle="modal" 
+                                data-bs-target="#staticBackdrop"
+                                >
                                 
-                                <!-- We split the string "2026-05-01" to just show "01" -->
                                 <span class="day-number">{{ day.date.split('-')[-1] }}</span>
                                 
                                 <span class="status-label {% if day.is_blocked %}text-danger{% else %}text-success{% endif %}">
@@ -299,6 +304,26 @@
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
+
+                    <!-- Placeholder for the Modal -->
+                    
+                    <div class="modal fade " id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ...
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Understood</button>
+                            </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Slot Details (Appears here when a box is clicked) -->

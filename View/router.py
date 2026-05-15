@@ -366,6 +366,26 @@ async def render_report_generation(request: Request , current_user = Depends(get
 @router.get("/schedule-manager", response_class=HTMLResponse)
 async def render_schedule_manager(request: Request , current_user = Depends(get_current_user)):
     is_admin = current_user and current_user.getUserInfo().get("role") == "admin"
+
+    blocked = GymDatesService.get_blocked_dates()
+
+    # generate a list of upcoming dates for the next 30 days and mark them as blocked or available
+    # init the list
+    upcoming = []
+
+    # loop through the next 30 days and add them to the list with the blocked status
+    for i in range(31):
+        # calculate the date and format it as a string
+        date = datetime.now() + timedelta(days=i)
+        # format the date as a string in the format of "YYYY-MM-DD" for easier comparison with blocked dates
+        date_str = date.strftime("%Y-%m-%d")
+        # append the date and its blocked status to the upcoming list
+        upcoming.append({
+            "date": date_str,
+            "is_blocked": date_str in blocked
+        })
+
+
     if not is_admin:
         response = Response(status_code=303)
         response.headers["HX-Redirect"] = "/" 
@@ -375,8 +395,50 @@ async def render_schedule_manager(request: Request , current_user = Depends(get_
         page_factory = PageFactory.create_page(PageType.SCHEDULE_MANAGER)
         template_path = page_factory.get_template_path()
 
-        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user} , request=request)
+        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, "upcoming": upcoming} , request=request)
 
     except Exception as e:
         print(f"Error rendering schedule manager page: {e}")
         return "<div>Error loading schedule manager. Please contact system admin.</div>"
+    
+
+
+@router.post("/admin/update-blocked-dates", response_class=HTMLResponse)
+async def update_blocked_dates(request: Request, current_user = Depends(get_current_user)):
+    is_admin = current_user and current_user.getUserInfo().get("role") == "admin"
+    if not is_admin:
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = "/" 
+        return response
+    
+    form_data = await request.form()
+    selected_dates = form_data.getlist("blocked_dates")
+
+    # get the start and end dates from the form data and convert them to datetime objects
+    start_date = datetime.strptime(selected_dates[0], "%Y-%m-%d")
+    end_date = datetime.strptime(selected_dates[1], "%Y-%m-%d") 
+
+    # if start date is after end date, swap them
+    if start_date > end_date:
+        start_date, end_date = end_date, start_date
+   
+    # create a new list 
+    expanded_dates = []
+
+    # assign current date to start date
+    current_date = start_date
+
+    # loop through the dates from start to end date and add them to the expanded dates list
+    while current_date <= end_date:
+        # append the current date to the expanded dates list in the format of "YYYY-MM-DD"
+        expanded_dates.append(current_date.strftime("%Y-%m-%d"))
+        # increment the current date by one day
+        current_date += timedelta(days=1)
+  
+    # parse the expanded dates and update the database with the new blocked dates
+    result = await GymDatesService.update_blocked_dates(expanded_dates, current_user.email)
+
+    if result.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        return "<div class='text-white'>Blocked dates updated successfully!</div>"
+    else:
+        return "<div class='text-white'>Failed to update blocked dates. Please try again.</div>"

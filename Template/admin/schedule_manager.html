@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
     <style>
         :root {
@@ -117,6 +118,87 @@
             display: inline-block;
             margin-right: 5px;
         }
+
+
+                .day-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .day-box.clickable {
+            cursor: pointer;
+            background-color: #fff;
+        }
+
+        .day-box.clickable:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        /* Style for when HTMX highlights the selected box */
+        .day-box.htmx-request {
+            opacity: 0.5;
+        }
+
+        .day-box.blocked {
+            background-color: #f3f3f3;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .day-number {
+            display: block;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .status-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }  
+        
+        /* Force the grid to have 7 equal columns */
+.row-cols-7 > * {
+    flex: 0 0 auto;
+    width: 14.2857142857%; /* 100 / 7 */
+}
+
+/* Ensure the boxes have a consistent shape and color */
+.day-box {
+    aspect-ratio: 1 / 1;
+    background: var(--onyx) !important; /* Force the dark background */
+    border: 1px solid var(--slate);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+/* Fix the text colors for your dark theme */
+.day-number {
+    color: #ffffff; /* Make numbers visible */
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.day-box.clickable:hover {
+    border-color: var(--lime);
+    background: #222 !important;
+    transform: scale(1.05);
+    z-index: 5;
+    box-shadow: 0 0 15px rgba(204, 255, 0, 0.2);
+}
+
+.day-box.active-date {
+    border-color: var(--lime);
+    background: rgba(204, 255, 0, 0.1) !important;
+}
     </style>
 </head>
 <body>
@@ -141,14 +223,19 @@
     <main class="container pb-5">
         <div class="row g-4">
             <!-- Blocking Controls -->
+     
             <div class="col-lg-4">
                 <div class="control-sidebar shadow-lg">
                     <h3 class="h5 mb-4 border-bottom border-secondary pb-2">Manual Override</h3>
-                    
+                          <form action="/admin/update-blocked-dates" method="post">
                     <div class="mb-4">
                         <label class="form-label">Select Date Range</label>
-                        <input type="date" class="form-control mb-2" value="2026-05-25">
-                        <input type="date" class="form-control" value="2026-05-26">
+                        
+                        <input type="date" class="form-control mb-2" name="blocked_dates" value="{{ upcoming[0].date }}">
+                        <input type="date" class="form-control" name="blocked_dates"  value="{{ upcoming[6].date }}">
+
+                        
+
                     </div>
 
                     <div class="mb-4">
@@ -161,17 +248,13 @@
                         </select>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Affected Slots</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" checked id="allDay">
-                            <label class="form-check-label" for="allDay">Block All 24 Hours</label>
-                        </div>
-                    </div>
+                  
 
                     <button class="btn btn-red w-100 py-3 mb-3">
                         <i class="bi bi-calendar-x-fill me-2"></i>Apply Blockade
                     </button>
+
+                </form>
                     
                     <div class="mt-4 pt-3 border-top border-secondary">
                         <small class="text-secondary d-block mb-2 text-uppercase fw-bold">Legend</small>
@@ -183,49 +266,51 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Calendar Grid -->
             <div class="col-lg-8">
                 <div class="calendar-card card p-4">
-                    <div class="row g-2">
-                        <!-- Days of week headers -->
-                        <div class="col text-center text-secondary fw-bold small mb-2">MON</div>
-                        <div class="col text-center text-secondary fw-bold small mb-2">TUE</div>
-                        <div class="col text-center text-secondary fw-bold small mb-2">WED</div>
-                        <div class="col text-center text-secondary fw-bold small mb-2">THU</div>
-                        <div class="col text-center text-secondary fw-bold small mb-2">FRI</div>
-                        <div class="col text-center text-secondary fw-bold small mb-2">SAT</div>
-                        <div class="col text-center text-secondary fw-bold small mb-2">SUN</div>
+                    <!-- Weekday Headers -->
+                    <div class="row row-cols-7 g-2 mb-2">
+                        <div class="col text-center text-secondary fw-bold small">MON</div>
+                        <div class="col text-center text-secondary fw-bold small">TUE</div>
+                        <div class="col text-center text-secondary fw-bold small">WED</div>
+                        <div class="col text-center text-secondary fw-bold small">THU</div>
+                        <div class="col text-center text-secondary fw-bold small">FRI</div>
+                        <div class="col text-center text-secondary fw-bold small">SAT</div>
+                        <div class="col text-center text-secondary fw-bold small">SUN</div>
                     </div>
 
-                    <!-- Calendar Rows (Simplified Example) -->
-                    <div class="row g-2 mb-2">
-                        <div class="col"><div class="day-box"><span class="day-number">1</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">2</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">3</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">4</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box blocked"><span class="day-number">5</span><span class="status-label text-danger">Holiday</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">6</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">7</span><span class="status-label text-success">Open</span></div></div>
+                    <!-- The actual dynamic grid -->
+                    <div class="row row-cols-7 g-2" id="calendar-grid">
+                        {% for day in upcoming %}
+                        <div class="col">
+                            <div class="day-box {% if day.is_blocked %}blocked{% else %}clickable{% endif %}"
+                                {% if not day.is_blocked %}
+                                    hx-get="/slots/{{ day.date }}" 
+                                    hx-target="#slot-container" 
+                                    hx-trigger="click"
+                                {% endif %}>
+                                
+                                <!-- We split the string "2026-05-01" to just show "01" -->
+                                <span class="day-number">{{ day.date.split('-')[-1] }}</span>
+                                
+                                <span class="status-label {% if day.is_blocked %}text-danger{% else %}text-success{% endif %}">
+                                    {% if day.is_blocked %}Blocked{% else %}Open{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
 
-                    <div class="row g-2">
-                        <div class="col"><div class="day-box"><span class="day-number">8</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">9</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">10</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">11</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">12</span><span class="status-label text-success">Open</span></div></div>
-                        <div class="col"><div class="day-box blocked"><span class="day-number">13</span><span class="status-label text-danger">Maint.</span></div></div>
-                        <div class="col"><div class="day-box"><span class="day-number">14</span><span class="status-label text-success">Open</span></div></div>
+                    <!-- Slot Details (Appears here when a box is clicked) -->
+                    <div id="slot-container" class="mt-4 p-3 border-top border-secondary">
+                        <p class="text-muted italic">Select an 'Open' date to manage time slots.</p>
                     </div>
-                    <!-- Remaining rows would go here -->
-                </div>
-
-                <div class="mt-4 p-3 border border-secondary bg-dark">
-                    <h4 class="h6 text-lime text-uppercase"><i class="bi bi-info-circle me-2"></i>Active Alerts</h4>
-                    <p class="small mb-0 text-secondary">May 13th: Weight room closed for floor resurfacing from 08:00 to 20:00.</p>
                 </div>
             </div>
+
+            
+            <!-- Calendar Grid -->
+
         </div>
     </main>
 

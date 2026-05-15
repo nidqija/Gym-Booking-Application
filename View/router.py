@@ -442,3 +442,31 @@ async def update_blocked_dates(request: Request, current_user = Depends(get_curr
         return "<div class='text-white'>Blocked dates updated successfully!</div>"
     else:
         return "<div class='text-white'>Failed to update blocked dates. Please try again.</div>"
+    
+
+# this endpoint will remove a blocked date from the database
+@router.post("/admin/remove-blocked-date", response_class=HTMLResponse)
+async def remove_blocked_date(request: Request, current_user = Depends(get_current_user)):
+
+    is_admin = current_user and current_user.getUserInfo().get("role") == "admin"
+
+    if not is_admin:
+        response = Response(status_code=303)
+        response.headers["HX-Redirect"] = "/" 
+        return response
+    
+    form_data = await request.form()
+
+    date_to_remove = form_data.get("date_to_remove")
+
+    result = await GymDatesService.remove_blocked_date(date_to_remove, current_user.email)
+
+    if result.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        return "<div class='text-white'>Blocked date removed successfully!</div>"
+    else:
+        return "<div class='text-white'>Failed to remove blocked date. Please try again.</div>"
+    
+
+  
+
+    

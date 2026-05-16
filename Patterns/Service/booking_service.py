@@ -164,6 +164,25 @@ class BookingService:
         return updated_booking
     
 
+    @staticmethod
+    async def get_all_bookings():
+        all_bookings = await Booking.get_all_bookings()
+        for booking in all_bookings:
+            session_id = booking.get("session_id")
+            if session_id:
+                session_data = await Session.get_session_by_id(session_id)
+                booking["session_name"] = session_data.get("available_sessions", "Unknown Session")
+                booking["start_time"] = session_data.get("start_time", "Unknown Start Time")
+                booking["end_time"] = session_data.get("end_time", "Unknown End Time")
+                booking["user_id"] = booking.get("user_id", "Unknown User")
+            else:
+                booking["session_name"] = "Unknown Session"
+                booking["start_time"] = "Unknown Start Time"
+                booking["end_time"] = "Unknown End Time"
+                booking["user_id"] = booking.get("user_id", "Unknown User")
+        return all_bookings
+    
+
     
 
 

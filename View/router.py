@@ -238,9 +238,10 @@ async def render_admin_dashboard(request: Request, current_user = Depends(get_cu
         
         # Gather data for the dashboard
         view_data = HomeService.get_home_data(current_user)
+        booking_data = await BookingService.get_all_bookings()
         template_path = page_factory.get_template_path()
         
-        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, **view_data} , request=request)
+        return templates.TemplateResponse(name=template_path, context={"request": request, "user": current_user, **view_data, "booking_data": booking_data} , request=request)
 
     except Exception as e:
         print(f"Error rendering admin dashboard: {e}")
@@ -465,7 +466,9 @@ async def remove_blocked_date(request: Request, current_user = Depends(get_curre
         return "<div class='text-white'>Blocked date removed successfully!</div>"
     else:
         return "<div class='text-white'>Failed to remove blocked date. Please try again.</div>"
-    
+
+
+
 
   
 

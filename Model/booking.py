@@ -134,6 +134,11 @@ class Booking(BaseModel):
         )
         return response.get("Attributes", {})
 
+    @staticmethod
+    async def get_all_bookings():
+        # this method is for retrieving all bookings from the database
+        response = db.table("Bookings").scan()
+        return response.get("Items", [])
         
 
 

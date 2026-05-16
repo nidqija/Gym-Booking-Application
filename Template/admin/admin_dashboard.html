@@ -199,31 +199,23 @@
                     <table class="table table-dark table-hover small">
                         <thead class="sticky-top bg-dark">
                             <tr class="text-secondary font-oswald border-bottom border-secondary">
-                                <th>TIMESTAMP</th>
-                                <th>ATHLETE</th>
-                                <th>EVENT</th>
-                                <th>STATION</th>
+                                <th>DATE</th>
+                                <th>USER EMAIL</th>
+                                <th>SESSION ID</th>
+                                <th>STATUS</th>
                             </tr>
                         </thead>
                         <tbody >
+                            {% for booking in booking_data %}
                             <tr>
-                                <td class="text-secondary">04:32:11</td>
-                                <td class="fw-bold">Marcus Vane</td>
-                                <td><span class="text-lime">SCAN_SUCCESS</span></td>
-                                <td>Main-Entrance-A</td>
+                                <td class="text-secondary">{{ booking.get("date", "Unknown") }}</td>
+                                <td class="fw-bold">{{ booking.get("user_id", "Unknown Email") }}</td>
+                                <td><span class="text-white">{{ booking.get("session_id", "Unknown Session") }}</span></td>
+                                <td class="text-lime ">{{ booking.get("status", "Unknown Status") }}</td>
                             </tr>
-                            <tr>
-                                <td class="text-secondary">04:30:05</td>
-                                <td class="fw-bold">Sarah Connor</td>
-                                <td><span class="text-danger">EXPIRED_PASS</span></td>
-                                <td>Main-Entrance-A</td>
-                            </tr>
-                            <tr>
-                                <td class="text-secondary">04:28:44</td>
-                                <td class="fw-bold">John Matrix</td>
-                                <td><span class="text-info">MANUAL_ENTRY</span></td>
-                                <td>Admin-Desk</td>
-                            </tr>
+                            {% endfor %}
+                           
+                           
                         </tbody>
                     </table>
                 </div>
